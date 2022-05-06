@@ -1,0 +1,113 @@
+.exchange {
+	width: 100%;
+}
+
+.exchange .exchange-box {
+	background-color: #677f44;
+	background: linear-gradient(to bottom right, #b5b44f 30%, #677f44 99%);
+	color: var(--color-white);
+	margin: 5rem auto 0 auto;
+	width: 35rem;
+	padding: 1rem 3rem;
+	border-radius: 1rem;
+}
+
+.exchange .exchange-box h2 {
+	font-size: 1.2rem;
+	margin-bottom: 0.5rem;
+}
+
+.exchange .exchange-box .from,
+.exchange .exchange-box .to {
+	height: 3rem;
+	border-radius: 5px;
+	background-color: #546934;
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.exchange .exchange-box .arrow {
+	position: relative;
+	background: #546934;
+	display: inline-block;
+	padding: 4px;
+	border-radius: 7px;
+	border: 5px solid #677f44;
+	margin-top: -50px;
+	margin-bottom: -50px;
+	z-index: 105;
+	cursor: pointer;
+}
+.exchange .exchange-box .arrow img {
+	transition: transform 0.2s ease-in-out;
+}
+.exchange .exchange-box .arrow .rot {
+	transform: rotate(180deg);
+}
+.exchange .exchange-box .token {
+	color: var(--color-white);
+	display: flex;
+	align-items: center;
+	/* height: 100%; */
+	background: #677f44;
+	padding: 5px 10px;
+	border-radius: 20px;
+	margin-right: 1rem;
+}
+.exchange .exchange-box .token-name {
+	font-size: 1rem;
+	margin-left: 0.5rem;
+}
+.exchange .exchange-box .token-img {
+	border-radius: 100%;
+}
+
+input {
+	border: none;
+	outline: none;
+	background: #546934;
+	height: 100%;
+	width: 80%;
+	color: var(--color-white);
+	border-radius: 5px;
+	padding: 1rem;
+	font-size: 1.5rem;
+	font-weight: bold;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+input[type="number"] {
+	-moz-appearance: textfield;
+}
+
+.exchange .exchange-box .button {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	padding: 0.5rem;
+	font-family: inherit;
+	font-size: 1.2rem;
+	color: #677f44;
+	border: none;
+	width: 100%;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.exchange .meta {
+	font-size: 0.7rem;
+	border-top: 2px solid var(--color-white);
+	padding-top: 1rem;
+}
+.exchange .meta .meta-flex {
+	display: flex;
+	align-items: center;
+}
+.exchange .meta .meta-flex p {
+	margin-left: 0.5rem;
+}

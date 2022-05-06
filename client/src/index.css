@@ -1,0 +1,26 @@
+@font-face {
+	font-family: "mikadobold";
+	src: url("/mikadobold_demo.otf");
+}
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+:root {
+	--color-primary: #a66c63;
+	--color-secondary: ##e96217;
+	--color-white: rgb(231, 231, 231);
+}
+body {
+	margin: 0;
+	font-family: mikadobold;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-size: 10px;
+}
+
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+		monospace;
+}
