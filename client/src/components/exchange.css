@@ -4,17 +4,31 @@
 
 .exchange .exchange-box {
 	background-color: #677f44;
-	background: linear-gradient(to bottom right, #b5b44f 30%, #677f44 99%);
+	background: linear-gradient(
+		to bottom right,
+		rgba(181, 180, 79, 0.85) 30%,
+		rgba(103, 127, 68, 0.7) 99%
+	);
 	color: var(--color-white);
 	margin: 5rem auto 0 auto;
 	width: 35rem;
 	padding: 1rem 3rem;
 	border-radius: 1rem;
+	backdrop-filter: blur(5px);
 }
 
-.exchange .exchange-box h2 {
+.exchange .exchange-box .header h2 {
 	font-size: 1.2rem;
+}
+
+.exchange .exchange-box .header {
 	margin-bottom: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.exchange .exchange-box .header .sound {
+	cursor: pointer;
 }
 
 .exchange .exchange-box .from,

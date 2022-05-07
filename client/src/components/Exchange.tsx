@@ -11,7 +11,12 @@ const HB = {
 	img: "./hornbill.jpg",
 };
 
-const Exchange = () => {
+interface IProps {
+	toggleSound: () => void;
+	soundPlaying: boolean;
+}
+
+const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 	const [value, setValue] = useState<number>(1.0);
 	const [route, setRoute] = useState([DAI, HB]);
 
@@ -26,9 +31,18 @@ const Exchange = () => {
 	return (
 		<div className="exchange">
 			<div className="exchange-box">
-				<h2>
-					Mint<span className="char"> / </span>Burn
-				</h2>
+				<div className="header">
+					<h2>
+						Mint<span className="char"> / </span>Burn
+					</h2>
+					<img
+						className="sound"
+						src={soundPlaying ? "./sound.svg" : "./sound-mute.svg"}
+						width={20}
+						height={20}
+						onClick={toggleSound}
+					/>
+				</div>
 				<div className="container">
 					<div className="from">
 						<input
@@ -92,6 +106,12 @@ const Exchange = () => {
 								HornBill Balance<span className="char">:</span>
 							</h3>
 							<p className="char">105</p>
+						</div>
+						<div className="meta-flex">
+							<h3>
+								Address<span className="char">:</span>
+							</h3>
+							<p className="char">0xFe10A7C4cD7e6b56De3374121bAb0349560A3237</p>
 						</div>
 					</div>
 				</div>
