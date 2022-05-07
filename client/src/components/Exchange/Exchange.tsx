@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useStore } from "../../store";
+import Connect from "../Connect/Connect";
 
 import "./exchange.css";
 
@@ -19,14 +21,13 @@ interface IProps {
 const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 	const [value, setValue] = useState<number>(1.0);
 	const [route, setRoute] = useState([DAI, HB]);
+	const { w3 } = useStore();
 
 	const onRouteChange = () => {
 		setRoute((route) => [route[1], route[0]]);
 	};
 
 	const isMinting = route[0].name === "Dai" ? true : false;
-
-	console.log(value);
 
 	return (
 		<div className="exchange">
@@ -84,7 +85,7 @@ const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 							<h3 className="token-name">{route[1].name}</h3>
 						</div>
 					</div>
-					<button className="button">Mint</button>
+					<Connect />
 				</div>
 				<div>
 					<div className="meta">
@@ -93,25 +94,27 @@ const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 								Total Supply <span className="char">/</span> Reserve
 								<span className="char">:</span>
 							</h3>
-							<p className="char">1.2M</p>
+							<p className="char">
+								{w3.totalSupply ? "$" + w3.totalSupply : ""}
+							</p>
 						</div>
 						<div className="meta-flex">
 							<h3>
 								Dai Balance<span className="char">:</span>
 							</h3>
-							<p className="char">10K</p>
+							<p className="char">{w3.balanceDAI || ""}</p>
 						</div>
 						<div className="meta-flex">
 							<h3>
 								HornBill Balance<span className="char">:</span>
 							</h3>
-							<p className="char">105</p>
+							<p className="char">{w3.balanceHORNBILL || ""}</p>
 						</div>
 						<div className="meta-flex">
 							<h3>
 								Address<span className="char">:</span>
 							</h3>
-							<p className="char">0xFe10A7C4cD7e6b56De3374121bAb0349560A3237</p>
+							<p className="char">{w3.account}</p>
 						</div>
 					</div>
 				</div>

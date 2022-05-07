@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import Sound from "react-sound";
 import "./App.css";
+import Wallets from "./components/Wallets/Wallets";
 
-import Exchange from "./components/Exchange";
+import Exchange from "./components/Exchange/Exchange";
+import { useStore } from "./store";
 
 const char = (char: string) => <span className="char">{char}</span>;
 
 function App() {
+	const { w3, walletPopupOpened } = useStore();
+
 	// @ts-ignore
 	const isChromium = window.chrome ? true : false;
 	const hasMutedBefore = localStorage.getItem("muted") === "true";
@@ -55,6 +59,7 @@ function App() {
 				loop={true}
 				autoLoad={true}
 			/>
+			{walletPopupOpened && <Wallets />}
 		</div>
 	);
 }

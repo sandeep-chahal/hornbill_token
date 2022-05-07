@@ -100,19 +100,6 @@ input[type="number"] {
 	-moz-appearance: textfield;
 }
 
-.exchange .exchange-box .button {
-	margin-top: 1rem;
-	margin-bottom: 1rem;
-	padding: 0.5rem;
-	font-family: inherit;
-	font-size: 1.2rem;
-	color: #677f44;
-	border: none;
-	width: 100%;
-	border-radius: 5px;
-	cursor: pointer;
-}
-
 .exchange .meta {
 	font-size: 0.7rem;
 	border-top: 2px solid var(--color-white);

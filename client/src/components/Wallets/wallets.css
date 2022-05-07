@@ -1,0 +1,47 @@
+.wallets.bg-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 150;
+	background: rgba(0, 0, 0, 0.5);
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.wallets .box {
+	background: var(--color-white);
+	padding: 1rem;
+	border-radius: 5px;
+}
+
+.wallets .box .title {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 0.5rem;
+}
+.wallets .box .title img {
+	cursor: pointer;
+}
+.wallets .box h2 {
+	font-size: 1.8rem;
+	font-weight: 600;
+}
+
+.wallets .box ul {
+	list-style: none;
+}
+
+.wallets ul li {
+	font-size: 1.2rem;
+	background: var(--color-primary);
+	color: var(--color-white);
+	padding: 0.3rem 0.5rem;
+	border-radius: 5px;
+	margin-bottom: 0.5rem;
+	cursor: pointer;
+}
