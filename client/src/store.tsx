@@ -4,6 +4,7 @@ import {
 	ReactComponentElement,
 	useState,
 	useEffect,
+	useRef,
 } from "react";
 
 import Web3 from "web3";
@@ -74,6 +75,7 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		isApproved: false,
 	});
 	const [walletPopup, setWalletPopup] = useState(false);
+	const hasMounted = useRef(false); //prevents calling useEffect twice
 
 	const handleConnect = async (w: string | null) => {
 		setWalletPopup(false);
@@ -117,7 +119,11 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 	};
 
 	useEffect(() => {
-		handleConnect(null);
+		if (!hasMounted.current) {
+			hasMounted.current = true;
+			console.log("Provider mounted");
+			handleConnect(null);
+		}
 	}, []);
 
 	return (

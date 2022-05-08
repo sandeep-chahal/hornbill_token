@@ -7,10 +7,20 @@ import {
 	switchNetwork,
 	approveDai,
 	mint,
+	sell,
 	getContractData,
+	formatEth,
 } from "../../utils/connect";
+type ROUTE = {
+	name: string;
+	img: string;
+};
 
-const Connect = () => {
+interface IProps {
+	route: ROUTE[];
+}
+
+const Connect = ({ route }: IProps) => {
 	const { toggleWalletPopup, w3, setW3 } = useStore();
 
 	const handleButtonClick = async () => {
@@ -27,30 +37,31 @@ const Connect = () => {
 				setW3({ ...w3, isApproved, loading: false });
 			}
 		}
-		if (w3.isApproved && w3.hb && w3.dai) {
-			const success = await mint(w3.web3, w3.hb, w3.account, "1");
-			if (success) {
-				const data = await getContractData(w3.dai, w3.hb, w3.account);
-				let totalSupply: string = parseFloat(
-					w3.web3.utils.fromWei(data.totalSupply)
-				).toFixed(2);
-				let balanceDAI: string = parseFloat(
-					w3.web3.utils.fromWei(data.balanceDai)
-				).toFixed(2);
-				let balanceHORNBILL: string = parseFloat(
-					w3.web3.utils.fromWei(data.balanceHb)
-				).toFixed(2);
-				console.log("new data", totalSupply);
+		handleBuySell();
+	};
 
-				setW3({
-					...w3,
-					totalSupply,
-					balanceDAI,
-					balanceHORNBILL,
-				});
-			}
+	const handleBuySell = async () => {
+		if (!w3.isApproved || !w3.hb || !w3.dai || !w3.account || !w3.web3) return;
+		let result = null;
+		if (route[0].name === "Dai")
+			result = await mint(w3.web3, w3.hb, w3.account, "1");
+		else result = await sell(w3.web3, w3.hb, w3.account, "1");
+		if (!result) {
+			setW3({ ...w3, loading: false });
 		}
-		setW3({ ...w3, loading: false });
+		const data = await getContractData(w3.dai, w3.hb, w3.account);
+		let totalSupply: string = formatEth(data.totalSupply);
+		let balanceDAI: string = formatEth(data.balanceDai);
+		let balanceHORNBILL: string = formatEth(data.balanceHb);
+		console.log("new data", totalSupply);
+
+		setW3({
+			...w3,
+			totalSupply,
+			balanceDAI,
+			balanceHORNBILL,
+			loading: false,
+		});
 	};
 
 	const getButtonText = () => {

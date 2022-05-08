@@ -132,7 +132,7 @@ export const approveDai = async (dai: Contract, address: string) => {
 		return false;
 	}
 };
-
+//buy
 export const mint = async (
 	web3: Web3,
 	hb: Contract,
@@ -148,4 +148,25 @@ export const mint = async (
 		console.log(err);
 		return false;
 	}
+};
+// sell
+export const sell = async (
+	web3: Web3,
+	hb: Contract,
+	address: string,
+	value: number | string
+) => {
+	try {
+		const wei = web3.utils.toWei(value.toString(), "ether");
+		const tx = await hb.methods.sell(wei).send({ from: address });
+		console.log(tx);
+		return true;
+	} catch (err) {
+		console.log(err);
+		return false;
+	}
+};
+
+export const formatEth = (value: string) => {
+	return parseFloat(Web3.utils.fromWei(value)).toFixed(2);
 };

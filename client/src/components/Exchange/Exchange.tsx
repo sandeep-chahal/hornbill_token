@@ -85,7 +85,7 @@ const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 							<h3 className="token-name">{route[1].name}</h3>
 						</div>
 					</div>
-					<Connect />
+					<Connect route={route} />
 				</div>
 				<div>
 					<div className="meta">
