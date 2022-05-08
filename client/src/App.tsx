@@ -5,11 +5,12 @@ import Wallets from "./components/Wallets/Wallets";
 
 import Exchange from "./components/Exchange/Exchange";
 import { useStore } from "./store";
+import Modal from "./components/modal/modal";
 
 const char = (char: string) => <span className="char">{char}</span>;
 
 function App() {
-	const { w3, walletPopupOpened } = useStore();
+	const { w3, walletPopupOpened, toggleWalletPopup } = useStore();
 
 	// @ts-ignore
 	const isChromium = window.chrome ? true : false;
@@ -59,7 +60,11 @@ function App() {
 				loop={true}
 				autoLoad={true}
 			/>
-			{walletPopupOpened && <Wallets />}
+			{walletPopupOpened && (
+				<Modal header="Wallets" onClose={toggleWalletPopup}>
+					<Wallets />
+				</Modal>
+			)}
 		</div>
 	);
 }
