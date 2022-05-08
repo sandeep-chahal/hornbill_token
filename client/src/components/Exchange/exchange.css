@@ -17,6 +17,12 @@
 	backdrop-filter: blur(5px);
 }
 
+@media only screen and (max-width: 600px) {
+	.exchange .exchange-box {
+		width: 90%;
+	}
+}
+
 .exchange .exchange-box .header h2 {
 	font-size: 1.2rem;
 }
@@ -39,6 +45,13 @@
 	position: relative;
 	display: flex;
 	align-items: center;
+}
+
+@media only screen and (max-width: 600px) {
+	.exchange .exchange-box .from,
+	.exchange .exchange-box .to {
+		height: 90%;
+	}
 }
 
 .exchange .exchange-box .arrow {

@@ -12,12 +12,19 @@
 	--color-secondary: ##e96217;
 	--color-white: rgb(231, 231, 231);
 }
+html {
+	font-size: 100%;
+}
 body {
 	margin: 0;
 	font-family: mikadobold;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	font-size: 10px;
+}
+@media only screen and (max-width: 600px) {
+	html {
+		font-size: 70%;
+	}
 }
 
 code {
