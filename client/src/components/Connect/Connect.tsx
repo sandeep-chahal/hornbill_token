@@ -48,6 +48,7 @@ const Connect = ({ route }: IProps) => {
 		else result = await sell(w3.web3, w3.hb, w3.account, "1");
 		if (!result) {
 			setW3({ ...w3, loading: false });
+			return;
 		}
 		const data = await getContractData(w3.dai, w3.hb, w3.account);
 		let totalSupply: string = formatEth(data.totalSupply);

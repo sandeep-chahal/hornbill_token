@@ -105,6 +105,14 @@ input[type="number"] {
 	border-top: 2px solid var(--color-white);
 	padding-top: 1rem;
 }
+.exchange .meta .change-button {
+	background: transparent;
+	border: none;
+	margin-left: 0.5rem;
+	color: var(--color-white);
+	cursor: pointer;
+	text-decoration: underline;
+}
 .exchange .meta .meta-flex {
 	display: flex;
 	align-items: center;

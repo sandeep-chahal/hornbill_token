@@ -14,6 +14,7 @@ import connect, {
 	getContract,
 	switchNetwork,
 	getContractData,
+	formatEth,
 } from "./utils/connect";
 
 const CHAIN_ID = Number(import.meta.env["VITE_APP_CHAIN_ID"]);
@@ -30,6 +31,7 @@ export interface Iw3 {
 	totalSupply: string | null;
 	loading: boolean;
 	isApproved: boolean;
+	walletName: string | null;
 }
 
 interface IContext {
@@ -53,6 +55,7 @@ const Context = createContext<IContext>({
 		totalSupply: null,
 		loading: false,
 		isApproved: false,
+		walletName: null,
 	},
 	setW3: () => {},
 	walletPopupOpened: false,
@@ -73,6 +76,7 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		totalSupply: null,
 		loading: false,
 		isApproved: false,
+		walletName: localStorage.getItem("walletName"),
 	});
 	const [walletPopup, setWalletPopup] = useState(false);
 	const hasMounted = useRef(false); //prevents calling useEffect twice
@@ -96,17 +100,12 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 			isApproved = data.isApproved;
 			dai = Dai;
 			hb = Hb;
-			totalSupply = parseFloat(
-				res.web3.utils.fromWei(data.totalSupply)
-			).toFixed(2);
-			balanceDAI = parseFloat(res.web3.utils.fromWei(data.balanceDai)).toFixed(
-				2
-			);
-			balanceHORNBILL = parseFloat(
-				res.web3.utils.fromWei(data.balanceHb)
-			).toFixed(2);
+			totalSupply = formatEth(data.totalSupply);
+			balanceDAI = formatEth(data.balanceDai);
+			balanceHORNBILL = formatEth(data.balanceHb);
 		}
 		setW3((w) => ({
+			...w,
 			...res,
 			balanceDAI,
 			balanceHORNBILL,
@@ -122,7 +121,7 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		if (!hasMounted.current) {
 			hasMounted.current = true;
 			console.log("Provider mounted");
-			handleConnect(null);
+			handleConnect(w3.walletName);
 		}
 	}, []);
 

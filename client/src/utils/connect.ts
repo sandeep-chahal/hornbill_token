@@ -13,9 +13,6 @@ const DAI_ADDRESS = import.meta.env["VITE_APP_DAI_ADDRESS"];
 const HB_ADDRESS = import.meta.env["VITE_APP_HB_ADDRESS"];
 
 export default async (wallet: string | null) => {
-	if (wallet === null) {
-		wallet = localStorage.getItem("wallet");
-	}
 	if (wallet === null) return null;
 	console.log("connecting using", wallet);
 
@@ -58,7 +55,7 @@ export default async (wallet: string | null) => {
 		window.location.reload();
 	});
 
-	localStorage.setItem("wallet", wallet);
+	localStorage.setItem("walletName", wallet);
 
 	return {
 		web3,

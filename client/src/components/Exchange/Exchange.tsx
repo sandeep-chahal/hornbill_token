@@ -21,10 +21,14 @@ interface IProps {
 const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 	const [value, setValue] = useState<number>(1.0);
 	const [route, setRoute] = useState([DAI, HB]);
-	const { w3 } = useStore();
+	const { w3, toggleWalletPopup } = useStore();
 
 	const onRouteChange = () => {
 		setRoute((route) => [route[1], route[0]]);
+	};
+
+	const handleChangeWallet = () => {
+		toggleWalletPopup();
 	};
 
 	const isMinting = route[0].name === "Dai" ? true : false;
@@ -89,6 +93,17 @@ const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 				</div>
 				<div>
 					<div className="meta">
+						{w3.walletName && (
+							<div className="meta-flex">
+								<h3>
+									Connect using {w3.walletName}
+									<span className="char">:</span>
+								</h3>
+								<button onClick={handleChangeWallet} className="change-button">
+									Change
+								</button>
+							</div>
+						)}
 						<div className="meta-flex">
 							<h3>
 								Total Supply <span className="char">/</span> Reserve
