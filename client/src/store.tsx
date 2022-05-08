@@ -40,6 +40,13 @@ interface IContext {
 	walletPopupOpened: boolean;
 	toggleWalletPopup: () => void;
 	handleConnect: (w: string) => void;
+	transaction: ITransaction | null;
+	setTransaction: (transaction: ITransaction | null) => void;
+}
+export interface ITransaction {
+	name: string;
+	type: "LOADING" | "FAILED" | "SUCCESS";
+	tx?: any;
 }
 
 const Context = createContext<IContext>({
@@ -61,6 +68,8 @@ const Context = createContext<IContext>({
 	walletPopupOpened: false,
 	toggleWalletPopup: () => {},
 	handleConnect: (w: string) => {},
+	transaction: null,
+	setTransaction: (tx: ITransaction | null) => {},
 });
 
 const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
@@ -80,6 +89,7 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 	});
 	const [walletPopup, setWalletPopup] = useState(false);
 	const hasMounted = useRef(false); //prevents calling useEffect twice
+	const [transaction, setTransaction] = useState<ITransaction | null>(null);
 
 	const handleConnect = async (w: string | null) => {
 		setWalletPopup(false);
@@ -133,6 +143,8 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 				walletPopupOpened: walletPopup,
 				toggleWalletPopup: () => setWalletPopup(!walletPopup),
 				handleConnect: handleConnect,
+				transaction,
+				setTransaction,
 			}}
 		>
 			{children}

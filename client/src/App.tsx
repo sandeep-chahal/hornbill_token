@@ -6,11 +6,19 @@ import Wallets from "./components/Wallets/Wallets";
 import Exchange from "./components/Exchange/Exchange";
 import { useStore } from "./store";
 import Modal from "./components/modal/modal";
+import Transaction from "./components/Transaction/Transaction";
 
 const char = (char: string) => <span className="char">{char}</span>;
 
 function App() {
-	const { w3, walletPopupOpened, toggleWalletPopup } = useStore();
+	const {
+		w3,
+		walletPopupOpened,
+		toggleWalletPopup,
+		handleConnect,
+		transaction,
+		setTransaction,
+	} = useStore();
 
 	// @ts-ignore
 	const isChromium = window.chrome ? true : false;
@@ -62,7 +70,12 @@ function App() {
 			/>
 			{walletPopupOpened && (
 				<Modal header="Wallets" onClose={toggleWalletPopup}>
-					<Wallets />
+					<Wallets handleConnect={handleConnect} />
+				</Modal>
+			)}
+			{transaction && (
+				<Modal header="Transaction" onClose={() => setTransaction(null)}>
+					<Transaction transaction={transaction} />
 				</Modal>
 			)}
 		</div>

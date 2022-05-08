@@ -21,20 +21,39 @@ interface IProps {
 }
 
 const Connect = ({ route }: IProps) => {
-	const { toggleWalletPopup, w3, setW3 } = useStore();
+	const { toggleWalletPopup, w3, setW3, setTransaction } = useStore();
 
 	const handleButtonClick = async () => {
 		if (w3.loading) return;
 		if (!w3.web3 || !w3.account) return toggleWalletPopup();
 		setW3({ ...w3, loading: true });
 		if (w3.networkId !== CHAIN_ID) {
+			setTransaction({
+				name: "Switching network",
+				type: "LOADING",
+			});
 			await switchNetwork(w3.web3);
 			setW3({ ...w3, loading: false });
+			setTransaction(null);
 		}
 		if (!w3.isApproved && w3.dai) {
+			setTransaction({
+				name: "Approving DAI",
+				type: "LOADING",
+			});
 			const isApproved = await approveDai(w3.dai, w3.account);
 			if (isApproved) {
 				setW3({ ...w3, isApproved, loading: false });
+				setTransaction({
+					name: "DAI Approved",
+					type: "SUCCESS",
+				});
+			} else {
+				setW3({ ...w3, isApproved, loading: false });
+				setTransaction({
+					name: "DAI Approval Failed",
+					type: "FAILED",
+				});
 			}
 		}
 		handleBuySell();
@@ -42,12 +61,20 @@ const Connect = ({ route }: IProps) => {
 
 	const handleBuySell = async () => {
 		if (!w3.isApproved || !w3.hb || !w3.dai || !w3.account || !w3.web3) return;
+		setTransaction({
+			name: "Swapping",
+			type: "LOADING",
+		});
 		let result = null;
 		if (route[0].name === "Dai")
 			result = await mint(w3.web3, w3.hb, w3.account, "1");
 		else result = await sell(w3.web3, w3.hb, w3.account, "1");
 		if (!result) {
 			setW3({ ...w3, loading: false });
+			setTransaction({
+				name: "Swapping Failed",
+				type: "FAILED",
+			});
 			return;
 		}
 		const data = await getContractData(w3.dai, w3.hb, w3.account);
@@ -62,6 +89,10 @@ const Connect = ({ route }: IProps) => {
 			balanceDAI,
 			balanceHORNBILL,
 			loading: false,
+		});
+		setTransaction({
+			name: "Swapped",
+			type: "SUCCESS",
 		});
 	};
 
