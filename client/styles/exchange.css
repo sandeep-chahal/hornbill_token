@@ -17,6 +17,11 @@
 	backdrop-filter: blur(5px);
 }
 
+@media only screen and (max-width: 1000px) {
+	.exchange .exchange-box {
+		width: 70%;
+	}
+}
 @media only screen and (max-width: 600px) {
 	.exchange .exchange-box {
 		width: 90%;

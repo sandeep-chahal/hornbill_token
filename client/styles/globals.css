@@ -22,6 +22,16 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+@media only screen and (max-width: 1000px) {
+	html {
+		font-size: 90%;
+	}
+}
+@media only screen and (max-width: 800px) {
+	html {
+		font-size: 80%;
+	}
+}
 @media only screen and (max-width: 600px) {
 	html {
 		font-size: 70%;

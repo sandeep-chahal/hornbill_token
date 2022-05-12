@@ -13,10 +13,16 @@
 }
 
 .modal .box {
-	min-width: 30%;
+	min-width: 30rem;
 	background: var(--color-white);
 	padding: 1rem;
 	border-radius: 5px;
+}
+
+@media screen and (max-width: 768px) {
+	.modal .box {
+		width: 80%;
+	}
 }
 
 .modal .box .header {

@@ -55,7 +55,7 @@ function App() {
 				<div className="head">
 					<h1>HornBill</h1>
 					<p>
-						HornBill is a new erc20 token that is pegged to the dai stablecoin
+						HornBill is a new ERC20 token that is pegged to the dai stablecoin
 						{char(".")} It is named after the Hornbill bird{char(",")} which is
 						known for its large beak
 						{char(".")} This token is intended to be used for comedic purposes
