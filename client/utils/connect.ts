@@ -6,7 +6,10 @@ import Web3 from "web3";
 import ERC20 from "../contracts/ERC20.json";
 import HB from "../contracts/HornBill.json";
 
+import { isBrowser } from ".";
+
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL;
+const RPC_URL_HTTP = process.env.NEXT_PUBLIC_RPC_URL2;
 const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 const INFURA_ID = process.env.NEXT_PUBLIC_INFURA_ID;
 const DAI_ADDRESS = process.env.NEXT_PUBLIC_DAI_ADDRESS;
@@ -37,8 +40,25 @@ const connect = async (wallet: string | null) => {
 		} else if (wallet === "PORTIS") {
 			const portis = new Portis(PORTIS_ID, NETWORK_NAME);
 			provider = portis.provider;
+		} else if (wallet === "MEW" && isBrowser()) {
+			console.log("loading mew");
+			// @ts-ignore
+			const MEWconnect = (await import("@myetherwallet/mewconnect-web-client"))
+				.default;
+			console.log("mew loaded");
+			console.log(MEWconnect);
+
+			const mewConnect = new MEWconnect.Provider({
+				chainId: CHAIN_ID,
+				infuraId: INFURA_ID,
+				rpcUrl: RPC_URL_HTTP,
+			});
+			console.log(CHAIN_ID);
+			provider = mewConnect.makeWeb3Provider();
 		}
 		await provider.enable();
+		console.log("ggg");
+
 		const web3 = new Web3(provider);
 
 		console.log(web3);
@@ -125,18 +145,20 @@ export const getContractData = async (dai: any, hb: any, address: string) => {
 
 export const approveDai = async (dai: any, address: string) => {
 	try {
+		console.log("approving");
 		const tx = await dai.methods
 			.approve(
 				HB_ADDRESS,
 				"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 			)
-			.send({ from: address });
+			.send({
+				from: address,
+			});
 
-		console.log(tx);
+		console.log("TX", tx);
 		return true;
 	} catch (err) {
-		console.log(err);
-
+		console.log("Approve failed", err);
 		return false;
 	}
 };
@@ -170,7 +192,7 @@ export const sell = async (
 		console.log(tx);
 		return true;
 	} catch (err) {
-		console.log(err);
+		console.log("Swap error", err);
 		return false;
 	}
 };

@@ -43,6 +43,16 @@ const Wallets = ({ handleConnect }: { handleConnect: (w: string) => void }) => {
 				/>
 				<h3>Portis</h3>
 			</li>
+			<li onClick={() => handleConnect("MEW")}>
+				<Image
+					className="logo"
+					width={25}
+					height={25}
+					src="/mew.png"
+					alt="MEW"
+				/>
+				<h3>My Ether Wallet</h3>
+			</li>
 		</ul>
 	);
 };
