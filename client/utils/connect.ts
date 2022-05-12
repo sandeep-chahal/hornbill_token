@@ -1,5 +1,6 @@
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 import WalletConnectProvider from "@walletconnect/web3-provider";
+import Portis from "@portis/web3";
 import Web3 from "web3";
 
 import ERC20 from "../contracts/ERC20.json";
@@ -10,62 +11,72 @@ const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 const INFURA_ID = process.env.NEXT_PUBLIC_INFURA_ID;
 const DAI_ADDRESS = process.env.NEXT_PUBLIC_DAI_ADDRESS;
 const HB_ADDRESS = process.env.NEXT_PUBLIC_HB_ADDRESS;
+const PORTIS_ID = process.env.NEXT_PUBLIC_PORTIS_ID || "";
+const NETWORK_NAME = process.env.NEXT_PUBLIC_NETWORK_NAME || "";
 
 const connect = async (wallet: string | null) => {
-	if (wallet === null) return null;
-	console.log("connecting using", wallet);
+	try {
+		if (wallet === null) return null;
+		console.log("connecting using", wallet);
 
-	let provider: any = null;
+		let provider: any = null;
 
-	if (wallet === "METAMASK") {
-		provider = window.ethereum;
-	} else if (wallet === "COINBASE") {
-		const coinbaseWallet = new CoinbaseWalletSDK({
-			appName: "HornBill Token",
-			appLogoUrl: window.location.host + "/hornbill.jpg",
-		});
-		provider = coinbaseWallet.makeWeb3Provider(RPC_URL, CHAIN_ID);
-	} else if (wallet === "WALLETCONNECT") {
-		provider = new WalletConnectProvider({
-			chainId: CHAIN_ID,
-			infuraId: INFURA_ID,
-		});
-	}
-	await provider.enable();
-	const web3 = new Web3(provider);
+		if (wallet === "METAMASK") {
+			provider = window.ethereum;
+		} else if (wallet === "COINBASE") {
+			const coinbaseWallet = new CoinbaseWalletSDK({
+				appName: "HornBill Token",
+				appLogoUrl: window.location.host + "/hornbill.jpg",
+			});
+			provider = coinbaseWallet.makeWeb3Provider(RPC_URL, CHAIN_ID);
+		} else if (wallet === "WALLETCONNECT") {
+			provider = new WalletConnectProvider({
+				chainId: CHAIN_ID,
+				infuraId: INFURA_ID,
+			});
+		} else if (wallet === "PORTIS") {
+			const portis = new Portis(PORTIS_ID, NETWORK_NAME);
+			provider = portis.provider;
+		}
+		await provider.enable();
+		const web3 = new Web3(provider);
 
-	console.log(web3);
+		console.log(web3);
 
-	const accounts = await web3.eth.getAccounts();
-	const chainId = await web3.eth.getChainId();
-	console.log(accounts);
-
-	provider.on("accountsChanged", (accounts: string[]) => {
+		const accounts = await web3.eth.getAccounts();
+		const chainId = await web3.eth.getChainId();
 		console.log(accounts);
-		window.location.reload();
-	});
 
-	// Subscribe to chainId change
-	provider.on("chainChanged", (chainId: number) => {
-		console.log(chainId);
-		window.location.reload();
-	});
+		provider.on("accountsChanged", (accounts: string[]) => {
+			console.log(accounts);
+			window.location.reload();
+		});
 
-	// Subscribe to session disconnection
-	provider.on("disconnect", (code: number, reason: string) => {
-		console.log(code, reason);
-		window.location.reload();
-	});
+		// Subscribe to chainId change
+		provider.on("chainChanged", (chainId: number) => {
+			console.log(chainId);
+			window.location.reload();
+		});
 
-	localStorage.setItem("walletName", wallet);
+		// Subscribe to session disconnection
+		provider.on("disconnect", (code: number, reason: string) => {
+			console.log(code, reason);
+			window.location.reload();
+		});
 
-	return {
-		web3,
-		provider,
-		account: accounts[0],
-		networkId: chainId,
-		walletName: wallet,
-	};
+		localStorage.setItem("walletName", wallet);
+
+		return {
+			web3,
+			provider,
+			account: accounts[0],
+			networkId: chainId,
+			walletName: wallet,
+		};
+	} catch (err) {
+		console.log("wallet connect error", err);
+		return null;
+	}
 };
 export default connect;
 

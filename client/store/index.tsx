@@ -93,9 +93,12 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 
 	const handleConnect = async (w: string | null) => {
 		setWalletPopup(false);
-		const res = await connect(w);
-		if (res === null) return;
 		setW3((w) => ({ ...w, loading: true }));
+		const res = await connect(w);
+		if (res === null) {
+			setW3((w) => ({ ...w, loading: false }));
+			return;
+		}
 		let dai: any = null;
 		let hb: any = null;
 		let totalSupply: string | null = null;

@@ -16,3 +16,6 @@
 	display: flex;
 	align-items: center;
 }
+.wallets li .logo {
+	object-fit: contain;
+}
