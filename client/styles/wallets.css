@@ -2,12 +2,17 @@
 	list-style: none;
 }
 
-.wallets li {
+.wallets li h3 {
 	font-size: 1.2rem;
-	background: var(--color-primary);
-	color: var(--color-white);
+	margin-left: 0.5rem;
+}
+.wallets li {
+	color: var(--color-primary);
+	background: var(--color-white-2);
 	padding: 0.3rem 0.5rem;
 	border-radius: 5px;
 	margin-bottom: 0.5rem;
 	cursor: pointer;
+	display: flex;
+	align-items: center;
 }
