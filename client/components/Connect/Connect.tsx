@@ -1,8 +1,6 @@
-import "./connect.css";
-
 import { useStore } from "../../store";
 
-const CHAIN_ID = Number(import.meta.env.VITE_APP_CHAIN_ID);
+const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 import {
 	switchNetwork,
 	approveDai,
@@ -21,11 +19,13 @@ interface IProps {
 }
 
 const Connect = ({ route }: IProps) => {
-	const { toggleWalletPopup, w3, setW3, setTransaction } = useStore();
+	const { toggleWalletPopup, w3, setW3, setTransaction, handleConnect } =
+		useStore();
 
 	const handleButtonClick = async () => {
 		if (w3.loading) return;
-		if (!w3.web3 || !w3.account) return toggleWalletPopup();
+		if (!w3.web3) return toggleWalletPopup();
+		if (!w3.account) return await handleConnect(w3.walletName);
 		setW3({ ...w3, loading: true });
 		if (w3.networkId !== CHAIN_ID) {
 			setTransaction({

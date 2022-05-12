@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+// import "./App.module.css";
 import Sound from "react-sound";
-import "./App.css";
-import Wallets from "./components/Wallets/Wallets";
+import Wallets from "../components/Wallets/Wallets";
 
-import Exchange from "./components/Exchange/Exchange";
-import { useStore } from "./store";
-import Modal from "./components/modal/modal";
-import Transaction from "./components/Transaction/Transaction";
+import Exchange from "../components/Exchange/Exchange";
+import { useStore } from "../store";
+import Modal from "../components/modal/modal";
+import Transaction from "../components/Transaction/Transaction";
+import { isBrowser } from "../utils";
 
 const char = (char: string) => <span className="char">{char}</span>;
 
@@ -21,8 +22,9 @@ function App() {
 	} = useStore();
 
 	// @ts-ignore
-	const isChromium = window.chrome ? true : false;
-	const hasMutedBefore = localStorage.getItem("muted") === "true";
+	const isChromium = isBrowser() && window.chrome ? true : false;
+	const hasMutedBefore =
+		isBrowser() && localStorage.getItem("muted") === "true";
 
 	const [soundPlaying, setSoundPlaying] = useState(
 		!isChromium && !hasMutedBefore
@@ -45,7 +47,7 @@ function App() {
 				document.removeEventListener("click", toggleSound);
 			}
 		};
-	}, [isChromium]);
+	}, []);
 
 	return (
 		<div className="app">
@@ -63,7 +65,7 @@ function App() {
 			</div>
 			<Exchange soundPlaying={soundPlaying} toggleSound={toggleSound} />
 			<Sound
-				url="./bg_sound.wav"
+				url="../bg_sound.wav"
 				playStatus={soundPlaying ? "PLAYING" : "STOPPED"}
 				loop={true}
 				autoLoad={true}

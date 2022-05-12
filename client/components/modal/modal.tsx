@@ -1,6 +1,3 @@
-import { ReactChildren, ReactChild } from "react";
-import "./modal.css";
-
 interface IProps {
 	header: string;
 	onClose: () => void;
@@ -13,7 +10,7 @@ const Modal = (props: IProps) => {
 			<div className="box">
 				<div className="header">
 					<h2>{props.header}</h2>
-					<img src="./close.svg" className="close" onClick={props.onClose} />
+					<img src="/close.svg" className="close" onClick={props.onClose} />
 				</div>
 				<div className="body">{props.children}</div>
 			</div>

@@ -1,6 +1,6 @@
 .app {
 	color: var(--color-primary);
-	background-image: url("./bg.jpeg");
+	background-image: url("/bg.jpeg");
 	background-size: cover;
 	height: 100vh;
 	width: 100vw;

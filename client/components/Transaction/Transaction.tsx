@@ -1,4 +1,3 @@
-import "./transaction.css";
 import { ITransaction } from "../../store";
 
 const Transaction = ({ transaction }: { transaction: ITransaction }) => {

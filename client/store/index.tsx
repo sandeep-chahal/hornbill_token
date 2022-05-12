@@ -15,9 +15,10 @@ import connect, {
 	switchNetwork,
 	getContractData,
 	formatEth,
-} from "./utils/connect";
+} from "../utils/connect";
+import { isBrowser } from "../utils";
 
-const CHAIN_ID = Number(import.meta.env["VITE_APP_CHAIN_ID"]);
+const CHAIN_ID = Number(process.env["NEXT_PUBLIC_CHAIN_ID"]);
 
 export interface Iw3 {
 	web3: Web3 | null;
@@ -39,7 +40,7 @@ interface IContext {
 	setW3: (w3: Iw3) => void;
 	walletPopupOpened: boolean;
 	toggleWalletPopup: () => void;
-	handleConnect: (w: string) => void;
+	handleConnect: (w: string | null) => void;
 	transaction: ITransaction | null;
 	setTransaction: (transaction: ITransaction | null) => void;
 }
@@ -67,7 +68,7 @@ const Context = createContext<IContext>({
 	setW3: () => {},
 	walletPopupOpened: false,
 	toggleWalletPopup: () => {},
-	handleConnect: (w: string) => {},
+	handleConnect: (w: string | null) => {},
 	transaction: null,
 	setTransaction: (tx: ITransaction | null) => {},
 });
@@ -85,7 +86,7 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		totalSupply: null,
 		loading: false,
 		isApproved: false,
-		walletName: localStorage.getItem("walletName"),
+		walletName: isBrowser() ? localStorage.getItem("walletName") : null,
 	});
 	const [walletPopup, setWalletPopup] = useState(false);
 	const hasMounted = useRef(false); //prevents calling useEffect twice
@@ -102,7 +103,7 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		let balanceDAI: string | null = null;
 		let balanceHORNBILL: string | null = null;
 		let isApproved: boolean = false;
-		if (res.web3 && res.networkId === CHAIN_ID) {
+		if (res.web3 && res.networkId === CHAIN_ID && res.account) {
 			const { Dai, Hb } = await getContract(res.web3);
 
 			const data = await getContractData(Dai, Hb, res.account);
@@ -124,6 +125,7 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 			totalSupply,
 			loading: false,
 			isApproved: isApproved,
+			walletName: res.walletName,
 		}));
 	};
 
@@ -142,7 +144,7 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 				setW3,
 				walletPopupOpened: walletPopup,
 				toggleWalletPopup: () => setWalletPopup(!walletPopup),
-				handleConnect: handleConnect,
+				handleConnect,
 				transaction,
 				setTransaction,
 			}}

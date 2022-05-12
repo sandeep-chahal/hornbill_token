@@ -31,3 +31,10 @@ code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
 		monospace;
 }
+
+@import "./app.css";
+@import "./connect.css";
+@import "./exchange.css";
+@import "./modal.css";
+@import "./transaction.css";
+@import "./wallets.css";

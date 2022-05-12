@@ -1,5 +1,3 @@
-import "./wallets.css";
-
 const Wallets = ({ handleConnect }: { handleConnect: (w: string) => void }) => {
 	return (
 		<ul className="wallets">

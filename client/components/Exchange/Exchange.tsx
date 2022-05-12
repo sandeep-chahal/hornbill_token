@@ -1,8 +1,7 @@
 import { useState } from "react";
+import Image from "next/image";
 import { useStore } from "../../store";
 import Connect from "../Connect/Connect";
-
-import "./exchange.css";
 
 const DAI = {
 	name: "Dai",
@@ -10,7 +9,7 @@ const DAI = {
 };
 const HB = {
 	name: "HornBill",
-	img: "./hornbill.jpg",
+	img: "/hornbill.jpg",
 };
 
 interface IProps {
@@ -40,51 +39,57 @@ const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 					<h2>
 						Mint<span className="char"> / </span>Burn
 					</h2>
-					<img
+					<Image
 						className="sound"
-						src={soundPlaying ? "./sound.svg" : "./sound-mute.svg"}
+						src={soundPlaying ? "/sound.svg" : "/sound-mute.svg"}
 						width={20}
 						height={20}
 						onClick={toggleSound}
+						alt="sound"
 					/>
 				</div>
 				<div className="container">
 					<div className="from">
 						<input
+							className="input"
 							type="number"
 							value={value}
 							onChange={(e) => setValue(parseFloat(e.target.value))}
 						/>
 						<div className="token">
-							<img
+							<Image
 								className="token-img"
 								width={25}
 								height={25}
 								src={route[0].img}
+								alt={route[0].name}
 							/>
 							<h3 className="token-name">{route[0].name}</h3>
 						</div>
 					</div>
 					<div className="arrow" onClick={onRouteChange}>
-						<img
+						<Image
 							className={`${!isMinting && "rot"}`}
-							src="./arrow.svg"
+							src="/arrow.svg"
 							width={20}
 							height={20}
+							alt={"arrow-switch"}
 						/>
 					</div>
 					<div className="to">
 						<input
+							className="input"
 							type="number"
 							value={value}
 							onChange={(e) => setValue(parseFloat(e.target.value))}
 						/>
 						<div className="token">
-							<img
+							<Image
 								className="token-img"
 								src={route[1].img}
 								width={25}
 								height={25}
+								alt={route[1].name}
 							/>
 							<h3 className="token-name">{route[1].name}</h3>
 						</div>
@@ -93,7 +98,7 @@ const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 				</div>
 				<div>
 					<div className="meta">
-						{w3.walletName && (
+						{w3 && w3.walletName && (
 							<div className="meta-flex">
 								<h3>
 									Connect using {w3.walletName}

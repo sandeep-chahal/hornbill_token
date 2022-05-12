@@ -1,18 +1,19 @@
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3 from "web3";
+
 import { Contract } from "web3-eth-contract";
 
-import ERC20 from "../../contracts/ERC20.json";
-import HB from "../../contracts/HornBill.json";
+import ERC20 from "../contracts/ERC20.json";
+import HB from "../contracts/HornBill.json";
 
-const RPC_URL = import.meta.env["VITE_APP_RPC_URL"];
-const CHAIN_ID = Number(import.meta.env["VITE_APP_CHAIN_ID"]);
-const INFURA_ID = import.meta.env["VITE_APP_INFURA_ID"];
-const DAI_ADDRESS = import.meta.env["VITE_APP_DAI_ADDRESS"];
-const HB_ADDRESS = import.meta.env["VITE_APP_HB_ADDRESS"];
+const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL;
+const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
+const INFURA_ID = process.env.NEXT_PUBLIC_INFURA_ID;
+const DAI_ADDRESS = process.env.NEXT_PUBLIC_DAI_ADDRESS;
+const HB_ADDRESS = process.env.NEXT_PUBLIC_HB_ADDRESS;
 
-export default async (wallet: string | null) => {
+const connect = async (wallet: string | null) => {
 	if (wallet === null) return null;
 	console.log("connecting using", wallet);
 
@@ -35,8 +36,11 @@ export default async (wallet: string | null) => {
 	await provider.enable();
 	const web3 = new Web3(provider);
 
+	console.log(web3);
+
 	const accounts = await web3.eth.getAccounts();
 	const chainId = await web3.eth.getChainId();
+	console.log(accounts);
 
 	provider.on("accountsChanged", (accounts: string[]) => {
 		console.log(accounts);
@@ -62,8 +66,10 @@ export default async (wallet: string | null) => {
 		provider,
 		account: accounts[0],
 		networkId: chainId,
+		walletName: wallet,
 	};
 };
+export default connect;
 
 export const switchNetwork = async (web3: Web3) => {
 	// @ts-ignore
