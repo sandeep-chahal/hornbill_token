@@ -8,7 +8,6 @@ import {
 } from "react";
 
 import Web3 from "web3";
-import { Contract } from "web3-eth-contract";
 
 import connect, {
 	getContract,
@@ -27,8 +26,8 @@ export interface Iw3 {
 	networkId: number | null;
 	balanceDAI: string | null;
 	balanceHORNBILL: string | null;
-	dai: null | Contract;
-	hb: null | Contract;
+	dai: any;
+	hb: any;
 	totalSupply: string | null;
 	loading: boolean;
 	isApproved: boolean;
@@ -97,8 +96,8 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		const res = await connect(w);
 		if (res === null) return;
 		setW3((w) => ({ ...w, loading: true }));
-		let dai: Contract | null = null;
-		let hb: Contract | null = null;
+		let dai: any = null;
+		let hb: any = null;
 		let totalSupply: string | null = null;
 		let balanceDAI: string | null = null;
 		let balanceHORNBILL: string | null = null;

@@ -2,8 +2,6 @@ import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3 from "web3";
 
-import { Contract } from "web3-eth-contract";
-
 import ERC20 from "../contracts/ERC20.json";
 import HB from "../contracts/HornBill.json";
 
@@ -91,11 +89,7 @@ export const getContract = (web3: Web3) => {
 	};
 };
 
-export const getContractData = async (
-	dai: Contract,
-	hb: Contract,
-	address: string
-) => {
+export const getContractData = async (dai: any, hb: any, address: string) => {
 	const _daiBalance = dai.methods.balanceOf(address).call();
 	const _isApproved = dai.methods.allowance(address, HB_ADDRESS).call();
 	const _hbBalance = hb.methods.balanceOf(address).call();
@@ -118,7 +112,7 @@ export const getContractData = async (
 	};
 };
 
-export const approveDai = async (dai: Contract, address: string) => {
+export const approveDai = async (dai: any, address: string) => {
 	try {
 		const tx = await dai.methods
 			.approve(
@@ -138,7 +132,7 @@ export const approveDai = async (dai: Contract, address: string) => {
 //buy
 export const mint = async (
 	web3: Web3,
-	hb: Contract,
+	hb: any,
 	address: string,
 	value: number | string
 ) => {
@@ -155,7 +149,7 @@ export const mint = async (
 // sell
 export const sell = async (
 	web3: Web3,
-	hb: Contract,
+	hb: any,
 	address: string,
 	value: number | string
 ) => {
