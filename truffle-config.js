@@ -18,6 +18,7 @@
  *
  */
 require("dotenv").config();
+const config = require("./config.json");
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 //
@@ -48,19 +49,35 @@ module.exports = {
 			port: 8545, // Standard Ethereum port (default: none)
 			network_id: "*", // Any network (default: none)
 		},
-		kovan: {
-			provider: function () {
+		rinkeby: {
+			provider: () => {
 				return new HDWalletProvider({
 					privateKeys: [process.env.PRIVATE_KEY],
-					chainId: 42,
-					providerOrUrl: process.env.INFURA_URL,
+					chainId: 4,
+					providerOrUrl: config.RINKEBY_RPC_URL + process.env.INFURA_RINKEBY_ID,
 					pollingInterval: 30000,
 				});
 			},
-			network_id: 42,
+			network_id: 4,
 			gas: 6500000,
 			gasPrice: 10000000000,
 			networkCheckTimeout: 1000000,
+		},
+		bsc_testnet: {
+			provider: () =>
+				new HDWalletProvider({
+					privateKeys: [process.env.PRIVATE_KEY],
+					chainId: 97,
+					providerOrUrl: config.TBSC_RPC_URL.replace(
+						"__KEY__",
+						process.env.TBSC_MORALIS_KEY
+					),
+					pollingInterval: 100000,
+				}),
+			network_id: 97,
+			// confirmations: 10,
+			timeoutBlocks: 200,
+			skipDryRun: true,
 		},
 		// Another network with more advanced options...
 		// advanced: {

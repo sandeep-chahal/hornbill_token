@@ -1,10 +1,11 @@
 require("dotenv").config();
+const config = require("../config.json");
 const HornBill = artifacts.require("HornBill");
 const ERC20 = artifacts.require("ERC20");
 const truffleAssert = require("truffle-assertions");
 
-const DAI_ADDRESS = process.env.DAI_ADDRESS;
-const DAI_HOLDER = process.env.DAI_HOLDER;
+const DAI_ADDRESS = config.RINKEBY_DAI_ADDRESS;
+const DAI_HOLDER = config.RINKEBY_DAI_HOLDER;
 const MAX_AMOUNT =
 	"115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
