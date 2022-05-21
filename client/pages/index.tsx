@@ -72,7 +72,7 @@ function App() {
 			/>
 			{walletPopupOpened && (
 				<Modal header="Wallets" onClose={toggleWalletPopup}>
-					<Wallets handleConnect={handleConnect} />
+					<Wallets />
 				</Modal>
 			)}
 			{transaction && (

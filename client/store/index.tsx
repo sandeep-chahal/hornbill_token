@@ -15,15 +15,15 @@ import connect, {
 	getContractData,
 	formatEth,
 } from "../utils/connect";
-import { isBrowser } from "../utils";
-
-const CHAIN_ID = Number(process.env["NEXT_PUBLIC_CHAIN_ID"]);
+import { isBrowser, getSelectedNetworkId } from "../utils";
+import config from "../config.json";
 
 export interface Iw3 {
 	web3: Web3 | null;
 	provider: any;
 	account: string | null;
-	networkId: number | null;
+	currentNetworkId: number | null;
+	selectedNetworkId: number;
 	balanceDAI: string | null;
 	balanceHORNBILL: string | null;
 	dai: any;
@@ -39,9 +39,10 @@ interface IContext {
 	setW3: (w3: Iw3) => void;
 	walletPopupOpened: boolean;
 	toggleWalletPopup: () => void;
-	handleConnect: (w: string | null) => void;
+	handleConnect: (w: string | null, chainId: number | null) => void;
 	transaction: ITransaction | null;
 	setTransaction: (transaction: ITransaction | null) => void;
+	handleNetworkChange: (c: number) => void;
 }
 export interface ITransaction {
 	name: string;
@@ -54,7 +55,8 @@ const Context = createContext<IContext>({
 		web3: null,
 		provider: null,
 		account: null,
-		networkId: null,
+		currentNetworkId: null,
+		selectedNetworkId: getSelectedNetworkId(),
 		balanceDAI: null,
 		balanceHORNBILL: null,
 		dai: null,
@@ -67,9 +69,10 @@ const Context = createContext<IContext>({
 	setW3: () => {},
 	walletPopupOpened: false,
 	toggleWalletPopup: () => {},
-	handleConnect: (w: string | null) => {},
+	handleConnect: (w: string | null, chainId: number | null) => {},
 	transaction: null,
 	setTransaction: (tx: ITransaction | null) => {},
+	handleNetworkChange: (c: number) => {},
 });
 
 const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
@@ -77,7 +80,6 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		web3: null,
 		provider: null,
 		account: null,
-		networkId: null,
 		balanceDAI: null,
 		balanceHORNBILL: null,
 		dai: null,
@@ -86,15 +88,17 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		loading: false,
 		isApproved: false,
 		walletName: isBrowser() ? localStorage.getItem("walletName") : null,
+		selectedNetworkId: getSelectedNetworkId(),
+		currentNetworkId: null,
 	});
 	const [walletPopup, setWalletPopup] = useState(false);
 	const hasMounted = useRef(false); //prevents calling useEffect twice
 	const [transaction, setTransaction] = useState<ITransaction | null>(null);
 
-	const handleConnect = async (w: string | null) => {
+	const handleConnect = async (w: string | null, chainId: number | null) => {
 		setWalletPopup(false);
 		setW3((w) => ({ ...w, loading: true }));
-		const res = await connect(w);
+		const res = await connect(w, chainId);
 		if (res === null) {
 			setW3((w) => ({ ...w, loading: false }));
 			return;
@@ -105,10 +109,19 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		let balanceDAI: string | null = null;
 		let balanceHORNBILL: string | null = null;
 		let isApproved: boolean = false;
-		if (res.web3 && res.networkId === CHAIN_ID && res.account) {
-			const { Dai, Hb } = await getContract(res.web3);
+		if (
+			res.web3 &&
+			res.currentNetworkId === w3.selectedNetworkId &&
+			res.account
+		) {
+			const { Dai, Hb } = await getContract(res.web3, res.currentNetworkId);
 
-			const data = await getContractData(Dai, Hb, res.account);
+			const data = await getContractData(
+				Dai,
+				Hb,
+				res.account,
+				res.currentNetworkId
+			);
 
 			isApproved = data.isApproved;
 			dai = Dai;
@@ -131,11 +144,20 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		}));
 	};
 
+	const handleNetworkChange = (networkId: number) => {
+		setW3((w) => ({ ...w, selectedNetworkId: networkId }));
+		localStorage.setItem("selectedNetworkId", networkId.toString());
+
+		if (w3.currentNetworkId === networkId && !w3.dai && !w3.hb) {
+			window.location.reload();
+		}
+	};
+
 	useEffect(() => {
 		if (!hasMounted.current) {
 			hasMounted.current = true;
 			console.log("Provider mounted");
-			handleConnect(w3.walletName);
+			handleConnect(w3.walletName, w3.selectedNetworkId);
 		}
 	}, []);
 
@@ -149,6 +171,7 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 				handleConnect,
 				transaction,
 				setTransaction,
+				handleNetworkChange,
 			}}
 		>
 			{children}

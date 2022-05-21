@@ -1,6 +1,6 @@
 import { useStore } from "../../store";
+import config from "../../config.json";
 
-const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 import {
 	switchNetwork,
 	approveDai,
@@ -23,25 +23,41 @@ const Connect = ({ route }: IProps) => {
 		useStore();
 
 	const handleButtonClick = async () => {
+		// if not connected to the wallet
 		if (w3.loading) return;
-		if (!w3.web3) return toggleWalletPopup();
-		if (!w3.account) return await handleConnect(w3.walletName);
+		if (!w3.web3 || !w3.currentNetworkId) return toggleWalletPopup();
+		if (!w3.account)
+			return await handleConnect(w3.walletName, w3.currentNetworkId);
+
+		// connected
+		// if wrong network
 		setW3({ ...w3, loading: true });
-		if (w3.networkId !== CHAIN_ID) {
+		if (w3.currentNetworkId !== w3.selectedNetworkId) {
 			setTransaction({
 				name: "Switching network",
 				type: "LOADING",
 			});
-			await switchNetwork(w3.web3);
+			await switchNetwork(w3);
 			setW3({ ...w3, loading: false });
 			setTransaction(null);
+			return;
 		}
-		if (!w3.isApproved && w3.dai) {
+		// if dai not approved
+		if (!w3.isApproved) {
+			if (!w3.dai) {
+				console.log("dai contract not initialized");
+				return;
+			}
 			setTransaction({
 				name: "Approving DAI",
 				type: "LOADING",
 			});
-			const isApproved = await approveDai(w3.dai, w3.account);
+			const isApproved = await approveDai(
+				w3.dai,
+				w3.account,
+				w3.currentNetworkId
+			);
+			// dai was approved
 			if (isApproved) {
 				setW3({ ...w3, isApproved, loading: false });
 				setTransaction({
@@ -49,18 +65,31 @@ const Connect = ({ route }: IProps) => {
 					type: "SUCCESS",
 				});
 			} else {
+				// dai was not approved
 				setW3({ ...w3, isApproved, loading: false });
 				setTransaction({
 					name: "DAI Approval Failed",
 					type: "FAILED",
 				});
 			}
+			return;
 		}
+		// everything is ready
 		handleBuySell();
 	};
 
 	const handleBuySell = async () => {
-		if (!w3.isApproved || !w3.hb || !w3.dai || !w3.account || !w3.web3) return;
+		if (
+			!w3.isApproved ||
+			!w3.hb ||
+			!w3.dai ||
+			!w3.account ||
+			!w3.web3 ||
+			!w3.currentNetworkId
+		) {
+			console.log("something is not right");
+			return;
+		}
 		setTransaction({
 			name: "Swapping",
 			type: "LOADING",
@@ -77,7 +106,12 @@ const Connect = ({ route }: IProps) => {
 			});
 			return;
 		}
-		const data = await getContractData(w3.dai, w3.hb, w3.account);
+		const data = await getContractData(
+			w3.dai,
+			w3.hb,
+			w3.account,
+			w3.currentNetworkId
+		);
 		let totalSupply: string = formatEth(data.totalSupply);
 		let balanceDAI: string = formatEth(data.balanceDai);
 		let balanceHORNBILL: string = formatEth(data.balanceHb);
@@ -98,8 +132,11 @@ const Connect = ({ route }: IProps) => {
 
 	const getButtonText = () => {
 		if (w3.loading) return "Wait";
-		if (!w3.web3 || !w3.account) return "Connect";
-		if (w3.networkId !== CHAIN_ID) return "Switch Network";
+		if (!w3.web3 || !w3.account || !w3.currentNetworkId) return "Connect";
+		if (w3.currentNetworkId !== w3.selectedNetworkId)
+			return `Switch To ${
+				w3.selectedNetworkId === 4 ? "Rinkeby" : "BSC Testnet"
+			}`;
 		if (!w3.isApproved) return "Approve Dai";
 		return "Swap";
 	};

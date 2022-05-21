@@ -29,6 +29,11 @@ const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 	const handleChangeWallet = () => {
 		toggleWalletPopup();
 	};
+	const getNetworkName = () => {
+		if (w3.currentNetworkId === 4) return "Rinkeby (4)";
+		if (w3.currentNetworkId === 97) return "BSC Testnet(97)";
+		return "Unknown";
+	};
 
 	const isMinting = route[0].name === "Dai" ? true : false;
 
@@ -135,6 +140,12 @@ const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 								Address<span className="char">:</span>
 							</h3>
 							<p className="char">{w3.account}</p>
+						</div>
+						<div className="meta-flex">
+							<h3>
+								Network<span className="char">:</span>
+							</h3>
+							<p className="char">{getNetworkName()}</p>
 						</div>
 					</div>
 				</div>
