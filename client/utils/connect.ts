@@ -28,12 +28,24 @@ const connect = async (wallet: string | null, chainId: number | null) => {
 		const RPC_URL_RINKEBY =
 			config.RINKEBY_RPC_URL + process.env.NEXT_PUBLIC_INFURA_RINEKBY_ID;
 
+		const RPC_HTTP_URL_RINKEBY = RPC_URL_RINKEBY.replace(
+			"wss://",
+			"https://"
+		).replace("/ws", "");
+
 		const RPC_URL_BSC_TESTNET = config.TBSC_RPC_URL.replace(
 			"__KEY__",
 			process.env.NEXT_PUBLIC_MORALIS_KEY || ""
 		);
 
+		const RPC_HTTP_URL_BSC_TESTNET = RPC_URL_BSC_TESTNET.replace(
+			"wss://",
+			"https://"
+		).replace("/ws", "");
 		const RPC_URL = chainId === 4 ? RPC_URL_RINKEBY : RPC_URL_BSC_TESTNET;
+		const RPC_URL_HTTP =
+			chainId === 4 ? RPC_HTTP_URL_RINKEBY : RPC_HTTP_URL_BSC_TESTNET;
+
 		// env vars ends
 
 		let provider: any = null;
@@ -50,16 +62,14 @@ const connect = async (wallet: string | null, chainId: number | null) => {
 			provider = new WalletConnectProvider({
 				chainId: chainId,
 				rpc: {
-					4: RPC_URL_RINKEBY.replace("wss://", "https://").replace("/ws", ""),
-					97: RPC_URL_BSC_TESTNET.replace("wss://", "https://").replace(
-						"/ws",
-						""
-					),
+					4: RPC_HTTP_URL_RINKEBY,
+					97: RPC_HTTP_URL_BSC_TESTNET,
 				},
 			});
+			provider.updateRpcUrl(chainId);
 		} else if (wallet === "PORTIS") {
 			const portis = new Portis(PORTIS_ID, {
-				nodeUrl: RPC_URL,
+				nodeUrl: RPC_URL_HTTP,
 				chainId: String(chainId),
 			});
 			provider = portis.provider;
@@ -74,10 +84,11 @@ const connect = async (wallet: string | null, chainId: number | null) => {
 			const mewConnect = new MEWconnect.Provider({
 				chainId: chainId,
 				// infuraId: INFURA_ID,
-				rpcUrl: RPC_URL,
+				rpcUrl: RPC_URL_HTTP,
 			});
-			console.log(chainId);
+			console.log("mew connected");
 			provider = mewConnect.makeWeb3Provider();
+			console.log("mew provider made");
 		}
 		await provider.enable();
 		console.log("ggg");
@@ -134,11 +145,17 @@ export const switchNetwork = async (w3: Iw3, afterNetworkAdd?: true) => {
 			method: "wallet_switchEthereumChain",
 			params: [{ chainId: web3.utils.toHex(chainId) }],
 		});
+		return true;
 	} catch (err) {
 		console.log(err);
 		if (!afterNetworkAdd) {
-			await addNetwork(w3);
-			await switchNetwork(w3, true);
+			try {
+				await addNetwork(w3);
+				await switchNetwork(w3, true);
+			} catch (err) {
+				console.log(err);
+				return false;
+			}
 		}
 	}
 };

@@ -37,9 +37,10 @@ const Connect = ({ route }: IProps) => {
 				name: "Switching network",
 				type: "LOADING",
 			});
-			await switchNetwork(w3);
+			const done = await switchNetwork(w3);
 			setW3({ ...w3, loading: false });
-			setTransaction(null);
+			if (done) setTransaction(null);
+			else setTransaction({ type: "FAILED", name: "Error switching network" });
 			return;
 		}
 		// if dai not approved
