@@ -3,7 +3,7 @@
 }
 
 .exchange .exchange-box {
-	background-color: #677f44;
+	background-color: var(--color-green);
 	background: linear-gradient(
 		to bottom right,
 		rgba(181, 180, 79, 0.85) 30%,
@@ -46,10 +46,11 @@
 .exchange .exchange-box .to {
 	height: 3rem;
 	border-radius: 5px;
-	background-color: #546934;
+	background-color: var(--color-secondary-2);
 	position: relative;
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
 }
 
 @media only screen and (max-width: 600px) {
@@ -61,11 +62,11 @@
 
 .exchange .exchange-box .arrow {
 	position: relative;
-	background: #546934;
+	background: var(--color-green-light);
 	display: inline-block;
-	padding: 4px;
-	border-radius: 7px;
-	border: 5px solid #677f44;
+	padding: 10px;
+	border-radius: 10px;
+	/* border: 5px solid var(--color-green-2); */
 	margin-top: -50px;
 	margin-bottom: -50px;
 	z-index: 105;
@@ -78,14 +79,14 @@
 	transform: rotate(180deg);
 }
 .exchange .exchange-box .token {
-	color: var(--color-white);
+	color: var(--color-black);
 	display: flex;
 	align-items: center;
 	/* height: 100%; */
-	background: #677f44;
+	background: var(--color-white);
 	padding: 5px 10px;
-	border-radius: 20px;
-	margin-right: 1rem;
+	border-radius: 5px;
+	margin-right: 0.5rem;
 }
 .exchange .exchange-box .token-name {
 	font-size: 1rem;
@@ -98,10 +99,10 @@
 .input {
 	border: none;
 	outline: none;
-	background: #546934;
+	background: var(--color-secondary-2);
 	height: 100%;
 	width: 80%;
-	color: var(--color-white);
+	color: var(--color-green);
 	border-radius: 5px;
 	padding: 1rem;
 	font-size: 1.5rem;
