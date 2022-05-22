@@ -2,6 +2,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useStore } from "../../store";
 import Connect from "../Connect/Connect";
+import Bridge from "../Bridge/Bridge";
 
 const DAI = {
 	name: "Dai",
@@ -21,6 +22,7 @@ const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 	const [value, setValue] = useState<number>(1.0);
 	const [route, setRoute] = useState([DAI, HB]);
 	const { w3, toggleWalletPopup } = useStore();
+	const [tab, setTab] = useState<"E" | "B">("E");
 
 	const onRouteChange = () => {
 		setRoute((route) => [route[1], route[0]]);
@@ -41,9 +43,20 @@ const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 		<div className="exchange">
 			<div className="exchange-box">
 				<div className="header">
-					<h2>
-						Mint<span className="char"> / </span>Burn
-					</h2>
+					<div className="tabs">
+						<h2
+							onClick={() => setTab("E")}
+							className={tab === "E" ? "active" : ""}
+						>
+							Exchange
+						</h2>
+						<h2
+							onClick={() => setTab("B")}
+							className={tab === "B" ? "active" : ""}
+						>
+							Bridge
+						</h2>
+					</div>
 					<Image
 						className="sound"
 						src={soundPlaying ? "/sound.svg" : "/sound-mute.svg"}
@@ -53,102 +66,111 @@ const Exchange = ({ soundPlaying, toggleSound }: IProps) => {
 						alt="sound"
 					/>
 				</div>
-				<div className="container">
-					<div className="from">
-						<input
-							className="input"
-							type="number"
-							value={value}
-							onChange={(e) => setValue(parseFloat(e.target.value))}
-						/>
-						<div className="token">
-							<Image
-								className="token-img"
-								width={25}
-								height={25}
-								src={route[0].img}
-								alt={route[0].name}
-							/>
-							<h3 className="token-name">{route[0].name}</h3>
-						</div>
-					</div>
-					<div className="arrow" onClick={onRouteChange}>
-						<Image
-							className={`${!isMinting && "rot"}`}
-							src="/arrow.svg"
-							width={20}
-							height={20}
-							alt={"arrow-switch"}
-						/>
-					</div>
-					<div className="to">
-						<input
-							className="input"
-							type="number"
-							value={value}
-							onChange={(e) => setValue(parseFloat(e.target.value))}
-						/>
-						<div className="token">
-							<Image
-								className="token-img"
-								src={route[1].img}
-								width={25}
-								height={25}
-								alt={route[1].name}
-							/>
-							<h3 className="token-name">{route[1].name}</h3>
-						</div>
-					</div>
-					<Connect route={route} />
-				</div>
-				<div>
-					<div className="meta">
-						{w3 && w3.walletName && (
-							<div className="meta-flex">
-								<h3>
-									Connect using {w3.walletName}
-									<span className="char">:</span>
-								</h3>
-								<button onClick={handleChangeWallet} className="change-button">
-									Change
-								</button>
+				{tab === "E" ? (
+					<>
+						<div className="container">
+							<div className="from">
+								<input
+									className="input"
+									type="number"
+									value={value}
+									onChange={(e) => setValue(parseFloat(e.target.value))}
+								/>
+								<div className="token">
+									<Image
+										className="token-img"
+										width={25}
+										height={25}
+										src={route[0].img}
+										alt={route[0].name}
+									/>
+									<h3 className="token-name">{route[0].name}</h3>
+								</div>
 							</div>
-						)}
-						<div className="meta-flex">
-							<h3>
-								Total Supply <span className="char">/</span> Reserve
-								<span className="char">:</span>
-							</h3>
-							<p className="char">
-								{w3.totalSupply ? "$" + w3.totalSupply : ""}
-							</p>
+							<div className="arrow" onClick={onRouteChange}>
+								<Image
+									className={`${!isMinting && "rot"}`}
+									src="/arrow.svg"
+									width={20}
+									height={20}
+									alt={"arrow-switch"}
+								/>
+							</div>
+							<div className="to">
+								<input
+									className="input"
+									type="number"
+									value={value}
+									onChange={(e) => setValue(parseFloat(e.target.value))}
+								/>
+								<div className="token">
+									<Image
+										className="token-img"
+										src={route[1].img}
+										width={25}
+										height={25}
+										alt={route[1].name}
+									/>
+									<h3 className="token-name">{route[1].name}</h3>
+								</div>
+							</div>
+							<Connect route={route} tokenAmount={value} />
 						</div>
-						<div className="meta-flex">
-							<h3>
-								Dai Balance<span className="char">:</span>
-							</h3>
-							<p className="char">{w3.balanceDAI || ""}</p>
+						<div>
+							<div className="meta">
+								{w3 && w3.walletName && (
+									<div className="meta-flex">
+										<h3>
+											Connect using {w3.walletName}
+											<span className="char">:</span>
+										</h3>
+										<button
+											onClick={handleChangeWallet}
+											className="change-button"
+										>
+											Change
+										</button>
+									</div>
+								)}
+								<div className="meta-flex">
+									<h3>
+										Total Supply <span className="char">/</span> Reserve
+										<span className="char">:</span>
+									</h3>
+									<p className="char">
+										{w3.totalSupply ? "$" + w3.totalSupply : ""}
+									</p>
+								</div>
+								<div className="meta-flex">
+									<h3>
+										Dai Balance<span className="char">:</span>
+									</h3>
+									<p className="char">{w3.balanceDAI || ""}</p>
+								</div>
+								<div className="meta-flex">
+									<h3>
+										HornBill Balance<span className="char">:</span>
+									</h3>
+									<p className="char">{w3.balanceHORNBILL || ""}</p>
+								</div>
+								<div className="meta-flex">
+									<h3>
+										Address<span className="char">:</span>
+									</h3>
+									<p className="char">{w3.account}</p>
+								</div>
+								<div className="meta-flex">
+									<h3>
+										Network<span className="char">:</span>
+									</h3>
+									<p className="char">{getNetworkName()}</p>
+								</div>
+							</div>
 						</div>
-						<div className="meta-flex">
-							<h3>
-								HornBill Balance<span className="char">:</span>
-							</h3>
-							<p className="char">{w3.balanceHORNBILL || ""}</p>
-						</div>
-						<div className="meta-flex">
-							<h3>
-								Address<span className="char">:</span>
-							</h3>
-							<p className="char">{w3.account}</p>
-						</div>
-						<div className="meta-flex">
-							<h3>
-								Network<span className="char">:</span>
-							</h3>
-							<p className="char">{getNetworkName()}</p>
-						</div>
-					</div>
-				</div>
+					</>
+				) : (
+					<Bridge />
+				)}
 			</div>
 		</div>
 	);

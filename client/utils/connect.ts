@@ -6,7 +6,8 @@ import Web3 from "web3";
 import ERC20 from "../contracts/ERC20.json";
 import HB from "../contracts/HornBill.json";
 import config from "../config.json";
-import { Iw3 } from "../store";
+import { IBridge, Iw3 } from "../store";
+import Bridge from "../contracts/Bridge.json";
 
 import { isBrowser } from ".";
 
@@ -95,30 +96,31 @@ const connect = async (wallet: string | null, chainId: number | null) => {
 
 		const web3 = new Web3(provider);
 
-		console.log(web3);
-
 		const accounts = await web3.eth.getAccounts();
 		const _chainId = await web3.eth.getChainId();
 		console.log(accounts);
 
 		provider.on("accountsChanged", (accounts: string[]) => {
-			console.log(accounts);
+			console.log("account changed", accounts);
+			alert("Account changed");
 			window.location.reload();
 		});
 
 		// Subscribe to chainId change
-		provider.on("chainChanged", (chainId: number) => {
-			console.log(chainId);
-			window.location.reload();
-		});
-
-		// Subscribe to session disconnection
-		provider.on("disconnect", (code: number, reason: string) => {
-			console.log(code, reason);
+		provider.on("chainChanged", async (chainId: string) => {
+			console.log("chain changed to", parseInt(chainId));
 			window.location.reload();
 		});
 
 		localStorage.setItem("walletName", wallet);
+
+		console.log("connected to wallet", {
+			web3,
+			provider,
+			account: accounts[0],
+			currentNetworkId: _chainId,
+			walletName: wallet,
+		});
 
 		return {
 			web3,
@@ -134,11 +136,18 @@ const connect = async (wallet: string | null, chainId: number | null) => {
 };
 export default connect;
 
-export const switchNetwork = async (w3: Iw3, afterNetworkAdd?: true) => {
-	console.log("switching network");
+export const switchNetwork = async (
+	w3: Iw3,
+	_chainId?: number,
+	afterNetworkAdd?: true
+) => {
 	const web3 = w3.web3;
-	const chainId = w3.selectedNetworkId;
-	if (!web3) return;
+	const chainId = _chainId || w3.selectedNetworkId;
+	console.log("switching network to", chainId);
+	if (!web3) {
+		console.log("web3 is not ready to switch network");
+		return;
+	}
 	try {
 		// @ts-ignore
 		await web3.currentProvider.request({
@@ -146,17 +155,18 @@ export const switchNetwork = async (w3: Iw3, afterNetworkAdd?: true) => {
 			params: [{ chainId: web3.utils.toHex(chainId) }],
 		});
 		return true;
-	} catch (err) {
+	} catch (err: any) {
 		console.log(err);
-		if (!afterNetworkAdd) {
+		if (!afterNetworkAdd && err.code === 4902) {
 			try {
 				await addNetwork(w3);
-				await switchNetwork(w3, true);
+				await switchNetwork(w3, chainId, true);
 			} catch (err) {
 				console.log(err);
 				return false;
 			}
 		}
+		return false;
 	}
 };
 
@@ -193,7 +203,8 @@ const addNetwork = async (w3: Iw3) => {
 	});
 };
 
-export const getContract = (web3: Web3, chainId: number) => {
+export const getContracts = (web3: Web3, chainId: number) => {
+	console.log("getting contracts on chain", chainId);
 	const DAI_ADDRESS =
 		chainId === 4 ? config.RINKEBY_DAI_ADDRESS : config.TBSC_DAI_ADDRESS;
 	const HB_ADDRESS =
@@ -205,10 +216,40 @@ export const getContract = (web3: Web3, chainId: number) => {
 	const Dai = new web3.eth.Contract(ERC20.abi, DAI_ADDRESS);
 	// @ts-ignore
 	const Hb = new web3.eth.Contract(HB.abi, HB_ADDRESS);
+	// @ts-ignore
+
+	// bridges
+	const RPC_URL_RINKEBY =
+		config.RINKEBY_RPC_URL + process.env.NEXT_PUBLIC_INFURA_RINEKBY_ID;
+	const RPC_URL_BSC_TESTNET = config.TBSC_RPC_URL.replace(
+		"__KEY__",
+		process.env.NEXT_PUBLIC_MORALIS_KEY || ""
+	);
+	const BRIDGE_ADDRESS_RINKEBY = process.env.NEXT_PUBLIC_BRIDGE_ADDRESS_RINKEBY;
+	const BRIDGE_ADDRESS_BSC_TESTNET =
+		process.env.NEXT_PUBLIC_BRIDGE_ADDRESS_BSC_TESTNET;
+	let BridgeRinkeby, BridgeBscTestnet;
+
+	const _provider = new Web3.providers.WebsocketProvider(
+		chainId !== 4 ? RPC_URL_RINKEBY : RPC_URL_BSC_TESTNET
+	);
+	const _web3 = new Web3(_provider);
+	BridgeRinkeby = new (chainId === 4 ? web3 : _web3).eth.Contract(
+		// @ts-ignore
+		Bridge.abi,
+		BRIDGE_ADDRESS_RINKEBY
+	);
+	BridgeBscTestnet = new (chainId === 97 ? web3 : _web3).eth.Contract(
+		// @ts-ignore
+		Bridge.abi,
+		BRIDGE_ADDRESS_BSC_TESTNET
+	);
 
 	return {
 		Dai,
 		Hb,
+		BridgeRinkeby,
+		BridgeBscTestnet,
 	};
 };
 
@@ -218,6 +259,7 @@ export const getContractData = async (
 	address: string,
 	chainId: number
 ) => {
+	console.log("getting contracts data on chain", chainId);
 	const HB_ADDRESS =
 		chainId === 4
 			? process.env.NEXT_PUBLIC_HB_ADDRESS_RINKEBY
@@ -235,7 +277,12 @@ export const getContractData = async (
 		_isApproved,
 	]);
 
-	console.log(res);
+	console.log("contract data", {
+		balanceDai: res[0],
+		balanceHb: res[1],
+		totalSupply: res[2],
+		isApproved: parseFloat(res[3]) > 0,
+	});
 
 	return {
 		balanceDai: res[0],
@@ -309,4 +356,53 @@ export const sell = async (
 
 export const formatEth = (value: string) => {
 	return parseFloat(Web3.utils.fromWei(value)).toFixed(2);
+};
+
+export const bridgeStep1 = async (
+	w3: Iw3,
+	bridge: any,
+	amount: number,
+	toChainId: number
+) => {
+	console.log(bridge, amount, toChainId);
+	try {
+		const tx = await bridge.methods
+			.burn(Web3.utils.toWei(amount.toString(), "ether"), toChainId)
+			.send({
+				from: w3.account,
+			});
+		const returnValues = {
+			nonce: parseInt(tx.events.Burn.returnValues.nonce),
+			amount: tx.events.Burn.returnValues.amount as string,
+			by: tx.events.Burn.returnValues.by as string,
+			fromChainId: w3.currentNetworkId as number,
+		};
+		localStorage.setItem(
+			`${w3.account}:pendingBridgeTx`,
+			JSON.stringify(returnValues)
+		);
+		return returnValues;
+	} catch (err) {
+		console.log("Error while bridge step 1:", err);
+		return null;
+	}
+};
+
+export const bridgeStep2 = async (
+	w3: Iw3,
+	bridge: any,
+	nonce: number,
+	fromChainId: number
+) => {
+	try {
+		const tx = await bridge.methods.mint(nonce, fromChainId).send({
+			from: w3.account,
+		});
+		console.log(tx);
+		localStorage.removeItem(`${w3.account}:pendingBridgeTx`);
+		return true;
+	} catch (err) {
+		console.log(err);
+		return false;
+	}
 };

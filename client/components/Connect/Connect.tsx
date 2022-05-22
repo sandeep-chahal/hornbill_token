@@ -16,9 +16,10 @@ type ROUTE = {
 
 interface IProps {
 	route: ROUTE[];
+	tokenAmount: number;
 }
 
-const Connect = ({ route }: IProps) => {
+const Connect = ({ route, tokenAmount }: IProps) => {
 	const { toggleWalletPopup, w3, setW3, setTransaction, handleConnect } =
 		useStore();
 
@@ -97,8 +98,8 @@ const Connect = ({ route }: IProps) => {
 		});
 		let result = null;
 		if (route[0].name === "Dai")
-			result = await mint(w3.web3, w3.hb, w3.account, "1");
-		else result = await sell(w3.web3, w3.hb, w3.account, "1");
+			result = await mint(w3.web3, w3.hb, w3.account, tokenAmount);
+		else result = await sell(w3.web3, w3.hb, w3.account, tokenAmount);
 		if (!result) {
 			setW3({ ...w3, loading: false });
 			setTransaction({

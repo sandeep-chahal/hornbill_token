@@ -10,12 +10,12 @@ import {
 import Web3 from "web3";
 
 import connect, {
-	getContract,
+	getContracts,
 	switchNetwork,
 	getContractData,
 	formatEth,
 } from "../utils/connect";
-import { isBrowser, getSelectedNetworkId } from "../utils";
+import { isBrowser, getSelectedNetworkId, getBridge } from "../utils";
 import config from "../config.json";
 
 export interface Iw3 {
@@ -28,10 +28,27 @@ export interface Iw3 {
 	balanceHORNBILL: string | null;
 	dai: any;
 	hb: any;
+	bridgeRinkeby: any;
+	bridgeBscTestnet: any;
 	totalSupply: string | null;
 	loading: boolean;
 	isApproved: boolean;
 	walletName: string | null;
+}
+
+export type IPendingBridgeTx = {
+	amount: string;
+	nonce: number;
+	fromChainId: number;
+	by: string;
+};
+
+export interface IBridge {
+	chainRoute: number[];
+	currentStep: number;
+	tokenAmount: number;
+	pendingBridgeTransaction: IPendingBridgeTx | null;
+	loading: boolean;
 }
 
 interface IContext {
@@ -43,6 +60,8 @@ interface IContext {
 	transaction: ITransaction | null;
 	setTransaction: (transaction: ITransaction | null) => void;
 	handleNetworkChange: (c: number) => void;
+	bridge: IBridge;
+	setBridge: (bridge: IBridge) => void;
 }
 export interface ITransaction {
 	name: string;
@@ -65,6 +84,8 @@ const Context = createContext<IContext>({
 		loading: false,
 		isApproved: false,
 		walletName: null,
+		bridgeRinkeby: null,
+		bridgeBscTestnet: null,
 	},
 	setW3: () => {},
 	walletPopupOpened: false,
@@ -73,6 +94,14 @@ const Context = createContext<IContext>({
 	transaction: null,
 	setTransaction: (tx: ITransaction | null) => {},
 	handleNetworkChange: (c: number) => {},
+	setBridge: (b: IBridge) => {},
+	bridge: {
+		chainRoute: [config.CHAIN_IDS[0], config.CHAIN_IDS[1]],
+		currentStep: 0,
+		tokenAmount: 1,
+		pendingBridgeTransaction: null,
+		loading: true,
+	},
 });
 
 const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
@@ -90,10 +119,19 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		walletName: isBrowser() ? localStorage.getItem("walletName") : null,
 		selectedNetworkId: getSelectedNetworkId(),
 		currentNetworkId: null,
+		bridgeRinkeby: null,
+		bridgeBscTestnet: null,
 	});
 	const [walletPopup, setWalletPopup] = useState(false);
 	const hasMounted = useRef(false); //prevents calling useEffect twice
 	const [transaction, setTransaction] = useState<ITransaction | null>(null);
+	const [bridge, setBridge] = useState<IBridge>({
+		chainRoute: [config.CHAIN_IDS[0], config.CHAIN_IDS[1]],
+		currentStep: 0,
+		tokenAmount: 1,
+		pendingBridgeTransaction: null,
+		loading: true,
+	});
 
 	const handleConnect = async (w: string | null, chainId: number | null) => {
 		setWalletPopup(false);
@@ -101,10 +139,13 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		const res = await connect(w, chainId);
 		if (res === null) {
 			setW3((w) => ({ ...w, loading: false }));
+			console.log("Error connecting to wallet");
 			return;
 		}
 		let dai: any = null;
 		let hb: any = null;
+		let bridgeBscTestnet: any = null;
+		let bridgeRinkeby: any = null;
 		let totalSupply: string | null = null;
 		let balanceDAI: string | null = null;
 		let balanceHORNBILL: string | null = null;
@@ -114,7 +155,10 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 			res.currentNetworkId === w3.selectedNetworkId &&
 			res.account
 		) {
-			const { Dai, Hb } = await getContract(res.web3, res.currentNetworkId);
+			const { Dai, Hb, BridgeBscTestnet, BridgeRinkeby } = await getContracts(
+				res.web3,
+				res.currentNetworkId
+			);
 
 			const data = await getContractData(
 				Dai,
@@ -126,10 +170,23 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 			isApproved = data.isApproved;
 			dai = Dai;
 			hb = Hb;
+			bridgeBscTestnet = BridgeBscTestnet;
+			bridgeRinkeby = BridgeRinkeby;
 			totalSupply = formatEth(data.totalSupply);
 			balanceDAI = formatEth(data.balanceDai);
 			balanceHORNBILL = formatEth(data.balanceHb);
+		} else {
+			console.log(
+				"web3 not fully loaded",
+				res,
+				res.web3 &&
+					res.currentNetworkId === w3.selectedNetworkId &&
+					res.account,
+				res.currentNetworkId,
+				w3.selectedNetworkId
+			);
 		}
+		setBridge(getBridge(res.account));
 		setW3((w) => ({
 			...w,
 			...res,
@@ -137,6 +194,8 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 			balanceHORNBILL,
 			dai,
 			hb,
+			bridgeRinkeby,
+			bridgeBscTestnet,
 			totalSupply,
 			loading: false,
 			isApproved: isApproved,
@@ -172,6 +231,8 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 				transaction,
 				setTransaction,
 				handleNetworkChange,
+				bridge,
+				setBridge,
 			}}
 		>
 			{children}

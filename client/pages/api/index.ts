@@ -16,7 +16,11 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 	const nonce = req.query.nonce;
 	const address = req.query.address;
 	const chainId = parseInt(req.query.fromChainId as string);
-
+	console.log({
+		nonce,
+		address,
+		chainId,
+	});
 	if (
 		!nonce ||
 		!address ||
@@ -39,6 +43,11 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 			: config.TBSC_RPC_URL.replace("wss://", "https://")
 					.replace("/ws", "")
 					.replace("__KEY__", process.env.NEXT_PUBLIC_MORALIS_KEY || "");
+
+	console.log({
+		BridgeAddress,
+		RPC_URL_HTTP,
+	});
 
 	const provider = new Web3.providers.HttpProvider(RPC_URL_HTTP);
 	const web3 = new Web3(provider);

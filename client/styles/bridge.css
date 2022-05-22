@@ -1,0 +1,128 @@
+.bridge {
+}
+
+.bridge .steps {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.bridge .steps .step {
+	border-radius: 100%;
+	padding: 1rem;
+	width: 1rem;
+	height: 1rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	border: 1px solid var(--color-white);
+	color: var(--color-white);
+}
+
+.bridge .steps .step.active {
+	color: var(--color-green);
+	background: var(--color-white);
+}
+
+.bridge .steps .step:not(:last-child) {
+	margin-right: 5rem;
+}
+.bridge .steps .step:not(:last-child)::after {
+	content: "";
+	width: 4.5rem;
+	height: 1.5px;
+	position: absolute;
+	left: calc(100% + 0.5rem);
+	background: repeating-linear-gradient(
+		90deg,
+		#fff 0,
+		#fff 1.5px,
+		#0000 1.5px,
+		#0000 8px
+	);
+}
+
+.bridge .step-1 {
+	margin-top: 1rem;
+}
+.bridge .step-1 .token-amount {
+	padding: 0.3rem 0.8rem;
+	width: 100%;
+	border: none;
+	font-size: bold;
+	font-size: 1.2rem;
+	border-radius: 0.5rem;
+	margin-top: 0.2rem;
+}
+
+.bridge .step-1 .chain {
+	margin-top: 0.5rem;
+}
+
+.bridge .step-1 .chain .chain-icon {
+	margin-right: 0.5rem;
+}
+
+.bridge .step-1 .chain .chain-name {
+	display: flex;
+	align-items: center;
+	margin-top: 0.2rem;
+	width: 100%;
+	background: var(--color-white-2);
+	background: linear-gradient(
+		to bottom right,
+		var(--color-green) 10%,
+		var(--color-green-light) 100%
+	);
+	padding: 0.3rem 0.6rem;
+	border-radius: 0.5rem;
+	font-size: 1.355rem;
+	color: var(--color-white-2);
+}
+
+.bridge .step-1 button {
+	display: block;
+	margin: auto;
+	margin-top: 1rem;
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+	border: none;
+	font-family: inherit;
+	color: var(--color-green);
+	width: 60%;
+	cursor: pointer;
+}
+
+.bridge .step-1 .exchange-arrow {
+	display: block;
+	margin: auto;
+	margin-top: 1rem;
+	cursor: pointer;
+}
+
+.bridge .step-2 {
+	margin-top: 1rem;
+	font-size: 1.2rem;
+}
+.bridge .step-2 ul {
+	display: flex;
+	flex-direction: column;
+	list-style: none;
+}
+
+.bridge .step-2 .info {
+	margin-top: 0.5rem;
+	text-align: center;
+}
+.bridge .step-2 button {
+	padding: 0.5rem;
+	border-radius: 0.3rem;
+	border: none;
+	font-family: inherit;
+	color: var(--color-green);
+	display: block;
+	margin: auto;
+	margin-top: 1rem;
+	cursor: pointer;
+}

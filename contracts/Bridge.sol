@@ -57,6 +57,9 @@ contract Bridge is ChainlinkClient {
         fee = _fee;
     }
 
+    event Burn(address indexed by, uint256 indexed nonce, uint256 amount);
+    event Mint(address indexed by, uint256 indexed nonce, uint256 amount);
+
     modifier onlyOwner() {
         require(
             msg.sender == owner,
@@ -144,6 +147,9 @@ contract Bridge is ChainlinkClient {
 
         // mint
         HornBill(tokenAddress).mint(jobData.sender, _amount);
+
+        // event
+        emit Burn(msg.sender, jobData.nonce, _amount);
     }
 
     function burn(uint256 amount, uint256 toChainId)
@@ -153,7 +159,42 @@ contract Bridge is ChainlinkClient {
         uint256 nonce = nonces[msg.sender];
         HornBill(tokenAddress).burn(msg.sender, amount);
         burnedTokens[msg.sender][nonce] = BurnedTokenData(toChainId, amount);
+        emit Burn(msg.sender, nonce, amount);
         nonces[msg.sender]++;
         return nonce;
+    }
+
+    function recenltyBurned(address from)
+        public
+        view
+        returns (BurnedTokenData[] memory)
+    {
+        uint256 nonce = nonces[from];
+        BurnedTokenData[] memory last5Burned = new BurnedTokenData[](5);
+
+        for (uint256 i = 0; i < 5; i++) {
+            if (nonce < i) {
+                break;
+            }
+            last5Burned[i] = burnedTokens[from][nonce - i];
+        }
+
+        return last5Burned;
+    }
+
+    function recentlyMinted(uint256 nonce, address from)
+        public
+        view
+        returns (bool[] memory)
+    {
+        bool[] memory minted = new bool[](5);
+        for (uint256 i = 0; i < 5; i++) {
+            if (nonce < i) {
+                break;
+            }
+            minted[i] = mintedTokens[from][nonce - i];
+        }
+
+        return minted;
     }
 }
