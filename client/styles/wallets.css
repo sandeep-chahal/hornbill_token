@@ -19,3 +19,21 @@
 .wallets li .logo {
 	object-fit: contain;
 }
+
+.networks {
+	display: flex;
+	margin-bottom: 0.5rem;
+}
+
+.networks label {
+	margin-right: 1rem;
+}
+
+.networks .network {
+	display: flex;
+	align-items: center;
+}
+
+.networks .network input {
+	margin-right: 0.5rem;
+}

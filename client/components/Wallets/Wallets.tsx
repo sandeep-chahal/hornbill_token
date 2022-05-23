@@ -14,8 +14,8 @@ const Wallets = () => {
 
 	return (
 		<>
-			<div onChange={console.log}>
-				<div>
+			<div className="networks">
+				<div className="network">
 					<input
 						type="radio"
 						id="rinkeby"
@@ -27,7 +27,7 @@ const Wallets = () => {
 					<label htmlFor="rinkeby">Rinkeby</label>
 				</div>
 
-				<div>
+				<div className="network">
 					<input
 						type="radio"
 						id="BSC"

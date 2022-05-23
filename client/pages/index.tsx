@@ -5,7 +5,7 @@ import Wallets from "../components/Wallets/Wallets";
 
 import Exchange from "../components/Exchange/Exchange";
 import { useStore } from "../store";
-import Modal from "../components/modal/modal";
+import Modal from "../components/Modal/modal";
 import Transaction from "../components/Transaction/Transaction";
 import { isBrowser } from "../utils";
 
