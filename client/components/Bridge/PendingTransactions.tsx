@@ -56,7 +56,9 @@ const PendingTransaction = ({
 									</div>
 									<p>
 										Amount<span className="char">: </span>
-										{Web3.utils.fromWei(tx.amount, "ether")}
+										<span className="char">
+											{Web3.utils.fromWei(tx.amount, "ether")}
+										</span>
 									</p>
 									<p>
 										Nonce<span className="char">: </span>

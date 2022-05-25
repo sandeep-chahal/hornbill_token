@@ -95,7 +95,7 @@ const Step1 = ({
 			>
 				{getStep1ButtonText()}
 			</button>
-			{w3.account && (
+			{w3.account && w3.bridgeRinkeby && w3.balanceHORNBILL && (
 				<div
 					onClick={() => w3.account && setShowPendingTx(true)}
 					className="pending-tx-button"

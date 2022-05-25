@@ -149,10 +149,23 @@
 .bridge .pending-transactions .tx-list {
 	margin-top: 0.5rem;
 	list-style: none;
+	overflow-y: auto;
+	max-height: 50vh;
+	padding-right: 0.5rem;
+}
+.bridge .pending-transactions .tx-list::-webkit-scrollbar {
+	width: 5px;
+}
+
+.bridge .pending-transactions .tx-list::-webkit-scrollbar-thumb {
+	background-color: var(--color-green);
+}
+.bridge .pending-transactions .tx-list li {
 	background: var(--color-white);
 	color: var(--color-green);
 	padding: 0.5rem 1rem;
 	border-radius: 0.5rem;
+	margin-bottom: 1rem;
 }
 .bridge .pending-transactions .tx-list .chain-route {
 	display: flex;
