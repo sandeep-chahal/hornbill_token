@@ -6,7 +6,7 @@ interface IProps {
 	bridge: IBridge;
 	setBridge: (bridge: IBridge) => void;
 	account: string;
-	setShowPendingTx: (b: bool) => void;
+	setShowPendingTx: (b: boolean) => void;
 }
 const PendingTransaction = ({
 	bridge,
