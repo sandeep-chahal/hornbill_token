@@ -34,7 +34,18 @@ const PendingTransaction = ({
 
 	return (
 		<div className="pending-transactions">
-			<h2>Pending Transactions</h2>
+			<h2>
+				<img
+					onClick={() => setShowPendingTx(false)}
+					role="button"
+					className="back-button"
+					src="/arrow.svg"
+					title="Go Back"
+					width={18}
+					height={18}
+				/>
+				<span>Pending Transactions</span>
+			</h2>
 
 			{bridge.pendingTransactions === null ? (
 				<div className="pulsing-4" />

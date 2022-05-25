@@ -141,6 +141,13 @@
 
 .bridge .pending-transactions h2 {
 	font-size: 1rem;
+	display: flex;
+	align-items: center;
+}
+.bridge .pending-transactions .back-button {
+	transform: rotate(90deg);
+	margin-right: 0.5rem;
+	cursor: pointer;
 }
 .bridge .pending-transactions .error {
 	text-align: center;
