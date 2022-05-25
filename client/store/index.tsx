@@ -38,7 +38,7 @@ export interface Iw3 {
 
 export type IPendingBridgeTx = {
 	amount: string;
-	nonce: number;
+	nonce: string;
 	fromChainId: number;
 	by: string;
 };
@@ -49,6 +49,7 @@ export interface IBridge {
 	tokenAmount: number;
 	pendingBridgeTransaction: IPendingBridgeTx | null;
 	loading: boolean;
+	pendingTransactions: IPendingBridgeTx[] | null;
 }
 
 interface IContext {
@@ -101,6 +102,7 @@ const Context = createContext<IContext>({
 		tokenAmount: 1,
 		pendingBridgeTransaction: null,
 		loading: true,
+		pendingTransactions: null,
 	},
 });
 
@@ -131,6 +133,7 @@ const Provider = ({ children }: { children: ReactComponentElement<any> }) => {
 		tokenAmount: 1,
 		pendingBridgeTransaction: null,
 		loading: true,
+		pendingTransactions: null,
 	});
 
 	const handleConnect = async (w: string | null, chainId: number | null) => {

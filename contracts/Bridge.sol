@@ -24,6 +24,11 @@ contract Bridge is ChainlinkClient {
         uint256 toChainId;
         uint256 amount;
     }
+    struct BurnedTokenDataWithNonce {
+        uint256 toChainId;
+        uint256 amount;
+        uint256 nonce;
+    }
 
     //      from                 nonce    true/false
     mapping(address => mapping(uint256 => bool)) public mintedTokens;
@@ -164,19 +169,24 @@ contract Bridge is ChainlinkClient {
         return nonce;
     }
 
-    function recenltyBurned(address from)
+    function recentlyBurned(address from)
         public
         view
-        returns (BurnedTokenData[] memory)
+        returns (BurnedTokenDataWithNonce[] memory)
     {
         uint256 nonce = nonces[from];
-        BurnedTokenData[] memory last5Burned = new BurnedTokenData[](5);
+        BurnedTokenDataWithNonce[]
+            memory last5Burned = new BurnedTokenDataWithNonce[](5);
 
         for (uint256 i = 0; i < 5; i++) {
             if (nonce < i) {
                 break;
             }
-            last5Burned[i] = burnedTokens[from][nonce - i];
+            last5Burned[i] = BurnedTokenDataWithNonce(
+                burnedTokens[from][nonce - i].toChainId,
+                burnedTokens[from][nonce - i].amount,
+                nonce - i
+            );
         }
 
         return last5Burned;

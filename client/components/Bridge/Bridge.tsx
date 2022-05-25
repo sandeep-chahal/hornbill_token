@@ -3,11 +3,13 @@ import Image from "next/image";
 import { useStore } from "../../store";
 import config from "../../config.json";
 import { bridgeStep1, switchNetwork, bridgeStep2 } from "../../utils/connect";
-
-interface IProps {}
+import Step1 from "./Step1";
+import Step2 from "./Step2";
+import PendingTransaction from "./PendingTransactions";
 
 const Bridge = () => {
 	const { w3, bridge, setBridge, transaction, setTransaction } = useStore();
+	const [showPendingTx, setShowPendingTx] = useState(false);
 
 	const handleStep1 = async () => {
 		if (bridge.loading) return;
@@ -86,26 +88,6 @@ const Bridge = () => {
 		});
 	};
 
-	const getStep1ButtonText = () => {
-		if (bridge.loading) return "Wait";
-		if (w3.currentNetworkId === bridge.chainRoute[0])
-			return `Send From ${
-				bridge.chainRoute[0] === 4 ? "Rinkeby" : "BSC Testnet"
-			}`;
-		else return "Switch Network";
-	};
-
-	const getStep2ButtonText = () => {
-		if (bridge.loading) return "Wait";
-		if (bridge.pendingBridgeTransaction?.fromChainId === w3.currentNetworkId) {
-			return `Switch Network To ${
-				w3.currentNetworkId === 4 ? "BSC Testnet" : "Rinkeby"
-			}`;
-		} else {
-			return "Get Tokens";
-		}
-	};
-
 	const handleStep2 = async () => {
 		// if already loading or no pending transaction
 		if (bridge.loading || !bridge.pendingBridgeTransaction) return;
@@ -157,136 +139,39 @@ const Bridge = () => {
 
 	return (
 		<div className="bridge">
-			<div className="steps">
-				<div className={`step ${bridge.currentStep === 0 ? "active" : ""}`}>
-					1
-				</div>
-				<div className={`step ${bridge.currentStep === 1 ? "active" : ""}`}>
-					2
-				</div>
-			</div>
-			{/* step 1 */}
-			{bridge.currentStep === 0 && (
-				<div className="step-1">
-					{/* token amount */}
-					<div>
-						<h3>Token Amount</h3>
-						<input
-							type="number"
-							className="token-amount"
-							value={bridge.tokenAmount}
-							onChange={(e) => {
-								setTokenAmount(parseFloat(e.target.value));
-								console.log(e.target.value);
-							}}
-						/>
+			{showPendingTx && w3.account ? (
+				<PendingTransaction
+					bridge={bridge}
+					setBridge={setBridge}
+					account={w3.account}
+					setShowPendingTx={setShowPendingTx}
+				/>
+			) : (
+				<>
+					<div className="steps">
+						<div className={`step ${bridge.currentStep === 0 ? "active" : ""}`}>
+							1
+						</div>
+						<div className={`step ${bridge.currentStep === 1 ? "active" : ""}`}>
+							2
+						</div>
 					</div>
 
-					{/* from */}
-					<div className="chain">
-						<h3>From</h3>
-						<div className="chain-name">
-							<img
-								className="chain-icon"
-								width={20}
-								height={20}
-								src={`${
-									bridge.chainRoute[0] === 4 ? "/ethereum.svg" : "/binance.svg"
-								}`}
-								alt="chain logo"
-							/>
-							<span>
-								{" "}
-								{bridge.chainRoute[0] === 4 ? "Rinkeby" : "BSC Testnet"}
-							</span>
-						</div>
-					</div>
-					{/* exchange arrow */}
-					<img
-						src="/exchange-arrow.svg"
-						width={20}
-						height={20}
-						className="exchange-arrow"
-						alt="exchange arrow"
-						onClick={() => {
-							alterChainRoute();
-						}}
-					/>
-					{/* to */}
-					<div className="chain">
-						<h3>To</h3>
-						<div className="chain-name">
-							<img
-								className="chain-icon"
-								width={20}
-								height={20}
-								src={`${
-									bridge.chainRoute[1] === 4 ? "/ethereum.svg" : "/binance.svg"
-								}`}
-								alt="chain logo"
-							/>
-							<span>
-								{bridge.chainRoute[1] === 4 ? "Rinkeby" : "BSC Testnet"}
-							</span>
-						</div>
-					</div>
-					{/* button */}
-					<button
-						disabled={bridge.loading || w3.account === null}
-						className="button"
-						onClick={handleStep1}
-					>
-						{getStep1ButtonText()}
-					</button>
-				</div>
-			)}
-			{bridge.currentStep === 1 && bridge.pendingBridgeTransaction && (
-				<div className="step-2">
-					{/* <div className="icons">
-						<img
-							width={20}
-							height={20}
-							src={`${
-								bridge.pendingBridgeTransaction.fromChainId === 4
-									? "/ethereum.svg"
-									: "/binance.svg"
-							}`}
+					{/* step 1 */}
+					{bridge.currentStep === 0 && (
+						<Step1
+							alterChainRoute={alterChainRoute}
+							bridge={bridge}
+							setTokenAmount={setTokenAmount}
+							handleStep1={handleStep1}
+							w3={w3}
+							setShowPendingTx={setShowPendingTx}
 						/>
-						<img
-							width={20}
-							height={20}
-							src={`${
-								bridge.pendingBridgeTransaction.fromChainId === 4
-									? "/binance.svg"
-									: "/ethereum.svg"
-							}`}
-						/>
-					</div> */}
-					<ul className="steps">
-						<li>
-							1<span className="char">:</span> Switch to{" "}
-							{bridge.pendingBridgeTransaction.fromChainId === 4
-								? "BSC Testnet"
-								: "Rinkeby"}
-						</li>
-						<li>
-							2<span className="char">:</span> Click on Get Tokens button
-						</li>
-						<li>
-							3<span className="char">:</span> Wait for a couple of seconds
-						</li>
-					</ul>
-					<div className="info">
-						Token Amount Available To Mint<span className="char">:</span>{" "}
-						{w3.web3?.utils.fromWei(
-							bridge.pendingBridgeTransaction.amount,
-							"ether"
-						)}
-					</div>
-					<button disabled={bridge.loading} onClick={handleStep2}>
-						{getStep2ButtonText()}
-					</button>
-				</div>
+					)}
+					{bridge.currentStep === 1 && bridge.pendingBridgeTransaction && (
+						<Step2 bridge={bridge} w3={w3} handleStep2={handleStep2} />
+					)}
+				</>
 			)}
 		</div>
 	);

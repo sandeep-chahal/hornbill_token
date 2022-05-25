@@ -6,7 +6,7 @@ import Web3 from "web3";
 import ERC20 from "../contracts/ERC20.json";
 import HB from "../contracts/HornBill.json";
 import config from "../config.json";
-import { IBridge, Iw3 } from "../store";
+import { IBridge, IPendingBridgeTx, Iw3 } from "../store";
 import Bridge from "../contracts/Bridge.json";
 
 import { isBrowser } from ".";
@@ -214,6 +214,7 @@ export const getContracts = (web3: Web3, chainId: number) => {
 
 	// @ts-ignore
 	const Dai = new web3.eth.Contract(ERC20.abi, DAI_ADDRESS);
+	console.log(HB_ADDRESS);
 	// @ts-ignore
 	const Hb = new web3.eth.Contract(HB.abi, HB_ADDRESS);
 	// @ts-ignore
@@ -372,7 +373,7 @@ export const bridgeStep1 = async (
 				from: w3.account,
 			});
 		const returnValues = {
-			nonce: parseInt(tx.events.Burn.returnValues.nonce),
+			nonce: tx.events.Burn.returnValues.nonce,
 			amount: tx.events.Burn.returnValues.amount as string,
 			by: tx.events.Burn.returnValues.by as string,
 			fromChainId: w3.currentNetworkId as number,
@@ -391,7 +392,7 @@ export const bridgeStep1 = async (
 export const bridgeStep2 = async (
 	w3: Iw3,
 	bridge: any,
-	nonce: number,
+	nonce: string,
 	fromChainId: number
 ) => {
 	try {
@@ -404,5 +405,19 @@ export const bridgeStep2 = async (
 	} catch (err) {
 		console.log(err);
 		return false;
+	}
+};
+
+export const getBridgePendingTxs = async (
+	account: string
+): Promise<IPendingBridgeTx[] | null> => {
+	try {
+		const res = await fetch(`/api/pending-transactions?address=${account}`);
+		const data = await res.json();
+		console.log("pending txs", data);
+		return data.pendingTransactions;
+	} catch (err) {
+		console.log(err);
+		return [];
 	}
 };

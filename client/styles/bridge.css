@@ -126,3 +126,94 @@
 	margin-top: 1rem;
 	cursor: pointer;
 }
+
+.bridge .step-1 .pending-tx-button {
+	text-align: center;
+	margin-top: 0.5rem;
+	margin-bottom: 1rem;
+	font-size: 0.8rem;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.bridge .pending-transactions {
+}
+
+.bridge .pending-transactions h2 {
+	font-size: 1rem;
+}
+.bridge .pending-transactions .error {
+	text-align: center;
+	margin-bottom: 2rem;
+}
+.bridge .pending-transactions .tx-list {
+	margin-top: 0.5rem;
+	list-style: none;
+	background: var(--color-white);
+	color: var(--color-green);
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+}
+.bridge .pending-transactions .tx-list .chain-route {
+	display: flex;
+	/* justify-content: space-between; */
+	align-items: center;
+}
+.bridge .pending-transactions .tx-list h3:last-child {
+	margin-left: 3rem;
+}
+.bridge .pending-transactions .tx-list button {
+	padding: 0.3rem 0.5rem;
+	border: none;
+	background: var(--color-green);
+	color: var(--color-white);
+	font-family: inherit;
+	border-radius: 0.5rem;
+	margin-top: 0.5rem;
+	cursor: pointer;
+}
+
+/* https://dev.to/afif/i-made-100-css-loaders-for-your-next-project-4eje */
+.pulsing-4 {
+	width: 8rem;
+	height: 8rem;
+	position: relative;
+
+	margin: auto;
+	margin-top: 2rem;
+	margin-bottom: 5rem;
+
+	animation: pl4_rot 1.5s linear infinite;
+}
+.pulsing-4:before,
+.pulsing-4:after {
+	content: "";
+	position: absolute;
+	border-radius: 50%;
+	inset: 0;
+	background: radial-gradient(circle 10px, #f6d267 94%, #0000),
+		repeating-conic-gradient(from -30deg, #0000 0 60deg, #f6d267 61deg 120deg);
+	-webkit-mask: radial-gradient(
+		circle 15px,
+		#000 calc(100% - 6px),
+		#0000 calc(100% - 5px) 94%,
+		#000
+	);
+}
+
+.pulsing-4:after {
+	animation: pl4 1s infinite;
+	transform: perspective(300px) translateZ(0px);
+}
+
+@keyframes pl4_rot {
+	to {
+		transform: rotate(360deg);
+	}
+}
+@keyframes pl4 {
+	to {
+		transform: perspective(300px) translateZ(150px) rotate(180deg);
+		opacity: 0;
+	}
+}

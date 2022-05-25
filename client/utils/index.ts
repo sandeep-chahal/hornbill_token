@@ -36,5 +36,6 @@ export const getBridge = (account: string | null): IBridge => {
 		tokenAmount: 1,
 		pendingBridgeTransaction: pendingBridgeTx,
 		loading: account ? false : true,
+		pendingTransactions: null,
 	};
 };

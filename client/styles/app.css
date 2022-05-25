@@ -21,7 +21,7 @@
 	font-size: 1.4rem;
 	width: 50%;
 }
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1200px) {
 	.container p {
 		width: 70%;
 	}
